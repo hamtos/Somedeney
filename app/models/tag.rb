@@ -7,13 +7,16 @@ class Tag < ApplicationRecord
 
   enum category: {
     other: 0,
-    natural: 1,
+    nature: 1,
     history_culture: 2,
-    gourmet: 3,
-    hot_spring: 4,
-    facilities: 5,
-    mitinoeki: 6,
-    month: 7,
-    seasonal: 8,
+    structure: 3,
+    gourmet: 4,
+    agriculture: 5,
+    facilities: 6,
+    museum: 7,
+    factory: 8,
+    accommodation: 9,
+    season: 10,
+    certified: 11,
   }
 end

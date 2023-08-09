@@ -2,16 +2,19 @@ ja:
   enums:
     tag:
       category:
-        other: "その他"
-        natural: "資源・自然"
-        history_culture: "歴史・文化"
-        gourmet: "グルメ"
-        hot_spring: "温泉"
-        facilities: "商業施設"
-        mitinoeki: "道の駅"
-        month: "月（1～12）"
-        seasonal: "季節（春・夏・秋・冬）"
-        
+          other: "その他"
+          nature: "資源・自然"
+          history_culture: "歴史・文化"
+          structure: "構造・建築物"
+          gourmet: "グルメ"
+          agriculture: "農業"
+          facilities: "商業施設"
+          museum: "資料館・展示施設"
+          factory: "製造所・工場"
+          accommodation: "温泉・宿泊施設"
+          season: "月・季節"
+          certified: "登録・認定"
+
   activerecord:
     errors:
       messages:
