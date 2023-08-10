@@ -1,7 +1,7 @@
 ja:
   enums:
     tag:
-      category:
+      tag_category:
           other: "その他"
           nature: "資源・自然"
           history_culture: "歴史・文化"

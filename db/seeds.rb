@@ -12,7 +12,7 @@ Admin.create!(
 Customer.create!(
   [
     {
-      email: 'a@a',
+      email: 'b@b',
       password: '999999',
       name: 'shimada'
     }
@@ -87,7 +87,7 @@ Customer.create!(
   [ 11, '日本遺産' ],
   [ 11, '国立公園' ],
 ].each do |category, name|
-  User.create!(
+  Tag.create(
     { customer_id: 1, tag_category: category, name: name, is_custom: false}
   )
 end

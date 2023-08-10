@@ -7,5 +7,23 @@ Rails.application.routes.draw do
     registrations: "public/registrations",
     sessions: "public/sessions"
   }
-  # For details on the DSL available within this file, see https://guides.rubyonrails.org/routing.html
+
+  scope module: :public do
+    root :to => "homes#top"
+    get 'customers/my_page' => 'customers#show'
+    get 'customers/information/edit' => 'customers#edit'
+    patch 'customers/information/edit' => 'customers#update'
+    get 'customers/confirm' => 'customers#confirm'
+    patch 'customers/leave' => 'customers#leave'
+    resources :notes, only: [:index, :new, :create, :show, :edit, :update]
+    get 'notes/customers' => 'notes#my_index'
+    resources :tags, only: [:index, :new, :create]
+    resources :plans, only: [:index, :new, :create, :show]
+    post '/plans/confirm' => 'plans#confirm'
+  end
+  namespace :admin do
+    root :to =>  'homes#top'
+    resources :customers, only: [:index, :show, :edit, :update]
+  end
+
 end

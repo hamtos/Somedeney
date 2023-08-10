@@ -1,4 +1,7 @@
 class ApplicationController < ActionController::Base
+  # ヘッダーロゴの遷移先url
+  @top_page_path = ""
+
   before_action :configure_permitted_parameters, if: :devise_controller?
 
   protected

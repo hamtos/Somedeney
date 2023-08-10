@@ -5,7 +5,7 @@ class Tag < ApplicationRecord
 
   belongs_to :customer
 
-  enum category: {
+  enum tag_category: {
     other: 0,
     nature: 1,
     history_culture: 2,
