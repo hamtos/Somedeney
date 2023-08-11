@@ -8,73 +8,87 @@
 <!--ヘッダー画面-->
 <header>
   <nav class="navbar navbar-expand-lg navbar-light border-bottom" style="height: 140px; background-color:#FFFFFF;">
+
     <div class="col-lg-3">
       <!--イラストロゴ-->
-      <div class="navbar-brand mb-auto">
-        <%= link_to @top_page_path do %>
-          <%= image_tag 'somedeney_logo.jpg', height: '100px', class:"border" %>
-        <% end %>
+      <div class="navbar-brand mb-auto row">
+        <div class="col-5">
+          <%= link_to @top_page_path do %>
+            <%= image_tag 'somedeney_logo.jpg', height: '100px', class:"border" %>
+          <% end %>
+        </div>
+        <div class="col-5">
+          <% if customer_signed_in? %>
+            ようこそ<%= current_customer.name %>さん
+          <% end %>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!--メニューボタン-->
+    <div class="col-auto mb-auto ml-auto">
+      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNavDropdown">
+        <ul class="navbar-nav">
+          <% if admin_signed_in? %>
+            <li><%= link_to 'ユーザー一覧', admin_customers_path, class: "btn btn-outline-dark m-3" %></li>
+            <li><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete, class: "btn btn-outline-dark m-3" %></li>
+          <% else %>
+            <% if customer_signed_in? %>
+              <li>
+                <%= link_to new_note_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
+                  <i class="fa-solid fa-plus"></i> 新規投稿
+                <% end %>
+              </li>
+              <li>
+                <%= link_to plans_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
+                  <i class="fa-solid fa-plane"></i> 計画管理
+                <% end %>
+              </li>
+              <li>
+                <%= link_to notes_customers_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
+                  <i class="fa-solid fa-book"></i> 投稿管理
+                <% end %>
+              </li>
+              <li>
+                <%= link_to notes_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
+                  <i class="fa-solid fa-magnifying-glass"></i> 詳細検索
+                <% end %>
+              </li>
+              <li>
+                <%= link_to customers_my_page_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
+                  <i class="fa-solid fa-user"></i> マイページ
+                <% end %>
+              </li>
+              <li>
+                <%= link_to destroy_customer_session_path, method: :delete, class: "btn btn-outline-dark m-3 rounded-pill" do %>
+                  <i class="fa-solid fa-right-from-bracket"></i> ログアウト
+                <% end %>
+              </li>
+            <% else %>
+              <li>
+                <%= link_to notes_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
+                  <i class="fa-solid fa-magnifying-glass"></i> 詳細検索
+                <% end %>
+              </li>
+              <li>
+                <%= link_to new_customer_session_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
+                  <i class="fa-solid fa-right-to-bracket"></i> ログイン
+                <% end %>
+              </li>
+              <div>
+                <li><%= link_to '新規登録', new_customer_registration_path, class: "ml-auto" %></li><br>
+                <li><%= link_to 'ゲストとしてログイン', customers_guest_sign_in_path, method: :post %></li>
+              </div>
+            <% end %>
+          <% end %>
+        </ul>
       </div>
     </div>
-      <!--メニューボタン-->
-      <div class="col-auto mb-auto ml-auto">
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNavDropdown" aria-controls="navbarNavDropdown" aria-expanded="false" aria-label="Toggle navigation">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarNavDropdown">
-          <ul class="navbar-nav">
-            <% if admin_signed_in? %>
-              <li><%= link_to 'ユーザー一覧', admin_customers_path, class: "btn btn-outline-dark m-3" %></li>
-              <li><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete, class: "btn btn-outline-dark m-3" %></li>
-            <% else %>
-              <% if customer_signed_in? %>
-                <li>
-                  <%= link_to new_note_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
-                    <i class="fa-solid fa-plus"></i> 新規投稿
-                  <% end %>
-                </li>
-                <li>
-                  <%= link_to plans_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
-                    <i class="fa-solid fa-plane"></i> 計画管理
-                  <% end %>
-                </li>
-                <li>
-                  <%= link_to notes_customers_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
-                    <i class="fa-solid fa-book"></i> 投稿管理
-                  <% end %>
-                </li>
-                <li>
-                  <%= link_to notes_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
-                    <i class="fa-solid fa-magnifying-glass"></i> 詳細検索
-                  <% end %>
-                </li>
-                <li>
-                  <%= link_to customers_my_page_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
-                    <i class="fa-solid fa-user"></i> マイページ
-                  <% end %>
-                </li>
-                <li>
-                  <%= link_to destroy_customer_session_path, method: :delete, class: "btn btn-outline-dark m-3 rounded-pill" do %>
-                    <i class="fa-solid fa-right-from-bracket"></i> ログアウト
-                  <% end %>
-                </li>
-              <% else %>
-                <li>
-                  <%= link_to notes_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
-                    <i class="fa-solid fa-magnifying-glass"></i> 詳細検索
-                  <% end %>
-                </li>
-                <li>
-                  <%= link_to new_customer_session_path, class: "btn btn-outline-dark m-3 rounded-pill" do %>
-                    <i class="fa-solid fa-right-to-bracket"></i> ログイン
-                  <% end %>
-                </li>
-                <li><%= link_to '新規登録', new_customer_registration_path %></li>
-              <% end %>
-            <% end %>
-          </ul>
-        </div>
-      </div>
   </nav>
 </header>

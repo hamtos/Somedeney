@@ -3,6 +3,12 @@
 class Public::SessionsController < Devise::SessionsController
   before_action :customer_state, only: [:create]
 
+  def guest_sign_in
+    user = Customer.guest
+    sign_in user
+    redirect_to root_path, notice: 'ゲストユーザーとしてログインしました。'
+  end
+
   protected
   # 退会しているかを判断するメソッド
   def customer_state

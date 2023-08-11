@@ -8,6 +8,10 @@ Rails.application.routes.draw do
     sessions: "public/sessions"
   }
 
+  devise_scope :customer do
+    post 'customers/guest_sign_in' => 'public/sessions#guest_sign_in'
+  end
+
   scope module: :public do
     root :to => "homes#top"
     get 'customers/my_page' => 'customers#show'
@@ -21,6 +25,7 @@ Rails.application.routes.draw do
     resources :plans, only: [:index, :new, :create, :show]
     post '/plans/confirm' => 'plans#confirm'
   end
+
   namespace :admin do
     root :to =>  'homes#top'
     resources :customers, only: [:index, :show, :edit, :update]

@@ -65,3 +65,5 @@ gem 'bootstrap5-kaminari-views', '~> 0.0.1'
 gem 'pry-byebug', group: :development
 
 gem 'jquery-rails'
+
+gem 'dotenv-rails'
