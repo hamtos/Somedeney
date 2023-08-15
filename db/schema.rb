@@ -89,12 +89,14 @@ ActiveRecord::Schema.define(version: 2023_08_08_064613) do
   create_table "notes", force: :cascade do |t|
     t.integer "customer_id", null: false
     t.string "title", null: false
-    t.text "body", null: false
-    t.string "prefecture", null: false
-    t.string "city", null: false
-    t.float "latitude", null: false
-    t.float "longitude", null: false
+    t.text "body"
+    t.string "prefecture"
+    t.string "city"
+    t.string "address"
+    t.float "latitude"
+    t.float "longitude"
     t.boolean "is_visited", default: false, null: false
+    t.boolean "is_deleted", default: false, null: false
     t.integer "star"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

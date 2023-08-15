@@ -1,34 +1,5 @@
 
 <div class="container">
   <!--マップ表示-->
-  <div class="map">
-    <div id="map">
-    </div>
-  </div>
-
-  <style>
-  #map {
-    height: 600px;
-    width: 600px;
-  }
-  </style>
-
-  <script>
-  let map
-
-  function initMap(){
-    geocoder = new google.maps.Geocoder()
-
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 35.625166, lng: 139.243611},
-      zoom: 12,
-    });
-
-    marker = new google.maps.Marker({
-      position:  {lat: 40.7828, lng:-73.9653},
-      map: map
-    });
-  }
-  </script>
-  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>
+  <%= render '/public/homes/map' %>
 </div>

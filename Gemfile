@@ -67,3 +67,5 @@ gem 'pry-byebug', group: :development
 gem 'jquery-rails'
 
 gem 'dotenv-rails'
+
+gem 'geocoder'

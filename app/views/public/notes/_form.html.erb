@@ -1,0 +1,27 @@
+    <div class="row form-group">
+      <div class="col-md-6"><%= f.text_field :latitude %></div>
+    </div>
+
+    <div class="row form-group">
+      <div class="col-md-6"><%= f.text_field :title, placeholder: "スポット・名物", class: "form-control" %></div>
+    </div>
+
+    <div class="row form-group">
+      <div class="col-md-6">
+        <%= f.text_area :body, placeholder: "メモ（任意）", class: "form-control", size: "100x6" %>
+      </div>
+    </div>
+
+    <div class="row form-group">
+      <div class="col-md-6"><%= f.file_field :note_image, accept: 'image/*', class: "form-control-file" %></div>
+    </div>
+
+    <div class="row">
+      <div class="col-md-2 offset-md-5">
+        <% if f.object.new_record? %>
+          <%= f.submit "保存", class: "btn btn-success" %>
+        <% else %>
+          <%= f.submit "変更", class: "btn btn-success" %>
+        <% end %>
+      </div>
+    </div>

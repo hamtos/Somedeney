@@ -1,0 +1,141 @@
+<h2>新規登録</h2>
+<br>
+<%= form_with model: @note, local: true do |form| %>
+
+  <div class="form-group">
+    <%= form.label :seach, "検索" %>
+    <%= form.text_field :seach %></div>
+  <div class="form-group">
+    <!-- buttonをクリックしたらcodeAddressを実行　-->
+    <input type="button" value="スポット検索" onclick="codeAddress()">
+    <input type="button" value="ジオコーダ" onclick="geocode()">
+    <input type="button" value="test" onclick="test()">
+    <div class="row">
+      <div class="col-md-6">
+        <div id="map"></div>
+      </div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="row">
+      <div class="col-sm-3">
+        <%= form.label :lat, "緯度" %>
+        <%= form.text_field :lat %></div>
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="row">
+      <div class="col-sm-3">
+        <%= form.label :lng, "経度"%>
+        <%= form.text_field :lng %></div>
+    </div>
+  </div>
+<% end %>
+    <div id="prefecture"></div>
+    <div id="city"></div>
+    <div id="test"></div>
+
+<style>
+#map{
+  height: 400px;
+  width: 400px;
+}
+</style>
+
+<script>
+  let map
+  let geocoder
+  let marker
+  let uluru
+  let infowindow
+  function initMap() {
+    geocoder = new google.maps.Geocoder()
+    // 数値が入っていないとマップが非表示になってしまうためnilの場合は0を入れる
+    // contollerにて既存に登録している緯度と経度を変数に入れて渡す
+    uluru = {lat: <%= @lat || 0 %>, lng: <%= @lng || 0 %>};
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 16,
+      center: uluru
+    });
+    contentString = "登録位置"
+    infowindow = new google.maps.InfoWindow({
+      content: contentString,
+      ariaLabel: "Uluru",
+    });
+    marker = new google.maps.Marker({
+      position: uluru,
+      map: map,
+      draggable: false   // ドラッグ不可
+    });
+
+    // マーカーのドロップ（ドラッグ終了）時のイベント
+    google.maps.event.addListener( marker, 'dragend', function(ev){
+      // イベントの引数evの、プロパティ.latLngが緯度経度。
+      document.getElementById('lat').value = ev.latLng.lat();
+      document.getElementById('lng').value = ev.latLng.lng();
+    });
+  }
+
+  // 画面中央の緯度経度を表示
+  function codeAddress(){
+  }
+
+  // ジオコード
+  function clear() {
+  marker.setMap(null);
+  responseDiv.style.display = "none";
+  }
+
+  function geocode() {
+    geocoder.geocode(
+    {
+      'address': document.getElementById('note_seach').value,
+      'region': 'jp'
+    },
+    function(results, status){
+      if(status==google.maps.GeocoderStatus.OK){
+      // 	document.getElementById('prefecture').innerHTML = "都道府県：" + results[0].address_components[results[0].address_components.length - 3].long_name;
+        document.getElementById('prefecture').innerHTML = "都道府県：" + getPreName(results,0);
+      	document.getElementById('city').innerHTML = "市町村：" + results[0].address_components[results[0].address_components.length - 4].long_name;
+      	var lat = results[0].geometry.location.lat(); //検索緯度
+      	var lng = results[0].geometry.location.lng(); //検索経度
+      	map.setCenter(results[0].geometry.location); //地図を遷移
+        move_marker(lat, lng)
+      } else {
+        alert('スポットが見つかりませんでした')
+      }
+    }
+  );
+}
+
+  // 国・県・市名を取得、type_code:0=>国、1=>県、2=>市
+  function getPreName(geoCodeResults, type_code){
+    var type_array = ['country', 'administrative_area_level_1', 'locality'];
+    // ジオコーディング結果を用いた処理
+    var geoCnt = geoCodeResults[0].address_components.length;
+    var prefName = "";
+    for (var i = 0; i < geoCnt; i++) {
+        if (geoCodeResults[0].address_components[i].types[0] === type_array[type_code]) {
+            prefName = geoCodeResults[0].address_components[i].long_name;
+            return prefName;
+        }
+    }
+    return prefName;
+  }
+
+  // マーカー移動
+  function move_marker(latitude, longitude) {
+    uluru = {lat: latitude, lng: longitude};
+    marker.setMap(null);  //マーカー削除
+    marker = new google.maps.Marker({
+      position: uluru,
+      map: map,
+      draggable: false   // true=>ドラッグ可能
+    });
+    infowindow.setContent("この位置を登録");
+    infowindow.open(map, marker);
+  }
+
+</script>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>
