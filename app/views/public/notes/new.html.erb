@@ -1,39 +1,76 @@
 <h2>新規登録</h2>
 <br>
-<%= form_with model: @note, local: true do |form| %>
+<div class="container">
+  <div class="row">
 
-  <div class="form-group">
-    <%= form.label :seach, "検索" %>
-    <%= form.text_field :seach %></div>
-  <div class="form-group">
-    <!-- buttonをクリックしたらcodeAddressを実行　-->
-    <input type="button" value="スポット検索" onclick="codeAddress()">
-    <input type="button" value="ジオコーダ" onclick="geocode()">
-    <input type="button" value="test" onclick="test()">
-    <div class="row">
-      <div class="col-md-6">
-        <div id="map"></div>
+    <!--左半分-->
+    <div class="col-md-5">
+      <%= form_with model: @note, local: true do |f| %>
+        <div class="row form-group">
+          <div class="col"><%= f.text_field :title, placeholder: "スポット・名物", class: "form-control", id:"input_name" %></div>
+        </div>
+
+        <div class="row form-group">
+          <div class="col">
+            <%= f.label :tag_id, "タグ設定：" %>
+            <%= f.select :tag_id, @tag_list, class: "form-select" %>
+          </div>
+        </div>
+
+        <div class="row form-group mt-2">
+          <div class="col">
+            <%= f.text_area :body, placeholder: "メモ（任意）", class: "form-control", size: "100x6" %>
+          </div>
+        </div>
+
+        <div class="row form-group">
+          <div class="col"><%= f.file_field :note_image, accept: 'image/*', class: "form-control-file" %></div>
+        </div>
+
+        <div class="row">
+          <div class="col-md-2 offset-md-5">
+            <% if f.object.new_record? %>
+              <%= f.submit "保存", class: "btn btn-success" %>
+            <% else %>
+              <%= f.submit "変更", class: "btn btn-success" %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+
+    <!--右半分-->
+    <div class="col-md-auto">
+
+      <!--検索欄-->
+      <form id='form'>
+        <input type="text" id="note_seach" required minlength="2" size="35" placeholder="スポット名を検索" />
+        <input type='button' value="スポット検索" onclick="geocode()">
+      </form>
+      <br>
+      見つかった場所：<br>　<b id="seach_address"></b>
+
+      <!--マップ表示-->
+      <div class="row mt-3">
+        <div class="col-md-6">
+          <div id="map"></div>
+        </div>
       </div>
+
+      <!--マーカー調整ボタン-->
+      <form id='form' class='mt-2'>
+        <input type='button' value="現在の表示位置を選択" onclick="set_marker_with_display()">
+      </form>
+
+      <!--デバッグ用-->
+      <div id="prefecture"></div>
+      <div id="city"></div>
+      <div id="lat"></div>
+      <div id="lng"></div>
     </div>
   </div>
-  <div class="form-group">
-    <div class="row">
-      <div class="col-sm-3">
-        <%= form.label :lat, "緯度" %>
-        <%= form.text_field :lat %></div>
-    </div>
-  </div>
-  <div class="form-group">
-    <div class="row">
-      <div class="col-sm-3">
-        <%= form.label :lng, "経度"%>
-        <%= form.text_field :lng %></div>
-    </div>
-  </div>
-<% end %>
-    <div id="prefecture"></div>
-    <div id="city"></div>
-    <div id="test"></div>
+</div>
+
 
 <style>
 #map{
@@ -65,27 +102,24 @@
     marker = new google.maps.Marker({
       position: uluru,
       map: map,
-      draggable: false   // ドラッグ不可
+      draggable: true   // ドラッグ可
     });
 
     // マーカーのドロップ（ドラッグ終了）時のイベント
     google.maps.event.addListener( marker, 'dragend', function(ev){
       // イベントの引数evの、プロパティ.latLngが緯度経度。
-      document.getElementById('lat').value = ev.latLng.lat();
-      document.getElementById('lng').value = ev.latLng.lng();
+      document.getElementById("lat").innerHTML = ev.latLng.lat();
+      document.getElementById('lng').innerHTML = ev.latLng.lng();
     });
   }
 
-  // 画面中央の緯度経度を表示
-  function codeAddress(){
-  }
-
-  // ジオコード
+  // マーカー削除
   function clear() {
   marker.setMap(null);
   responseDiv.style.display = "none";
   }
 
+  //入力文字から住所検索
   function geocode() {
     geocoder.geocode(
     {
@@ -94,9 +128,9 @@
     },
     function(results, status){
       if(status==google.maps.GeocoderStatus.OK){
-      // 	document.getElementById('prefecture').innerHTML = "都道府県：" + results[0].address_components[results[0].address_components.length - 3].long_name;
-        document.getElementById('prefecture').innerHTML = "都道府県：" + getPreName(results,0);
-      	document.getElementById('city').innerHTML = "市町村：" + results[0].address_components[results[0].address_components.length - 4].long_name;
+        document.getElementById('seach_address').innerHTML = results[0].formatted_address
+        document.getElementById('prefecture').innerHTML = "都道府県：" + getLocalName(results,1); //デバッグ用
+      	document.getElementById('city').innerHTML = "市町村：" + getLocalName(results,2); //デバッグ用
       	var lat = results[0].geometry.location.lat(); //検索緯度
       	var lng = results[0].geometry.location.lng(); //検索経度
       	map.setCenter(results[0].geometry.location); //地図を遷移
@@ -104,12 +138,28 @@
       } else {
         alert('スポットが見つかりませんでした')
       }
-    }
-  );
-}
+    });
+  }
+
+  //緯度経度から住所検索
+  function geocode_lacation(latlng) {
+    geocoder.geocode(
+    {
+      'location': latlng,
+      'region': 'jp'
+    },
+    function(results, status){
+      if(status==google.maps.GeocoderStatus.OK){
+        document.getElementById('seach_address').innerHTML = results[0].formatted_address //viewに住所を表示
+        move_marker(latlng.lat(), latlng.lng()) //マーカーを移動
+      } else {
+        alert('スポットが見つかりませんでした')
+      }
+    });
+  }
 
   // 国・県・市名を取得、type_code:0=>国、1=>県、2=>市
-  function getPreName(geoCodeResults, type_code){
+  function getLocalName(geoCodeResults, type_code){
     var type_array = ['country', 'administrative_area_level_1', 'locality'];
     // ジオコーディング結果を用いた処理
     var geoCnt = geoCodeResults[0].address_components.length;
@@ -130,10 +180,39 @@
     marker = new google.maps.Marker({
       position: uluru,
       map: map,
-      draggable: false   // true=>ドラッグ可能
+      draggable: true   // true=>ドラッグ可能
     });
-    infowindow.setContent("この位置を登録");
+    infowindow.setContent("この位置を登録する");
     infowindow.open(map, marker);
+  }
+
+  //現在の表示位置にマーカーを設置する
+  function set_marker_with_display(){
+    var latlng = map.getCenter()
+    geocode_lacation(latlng)
+  }
+
+  //lat、lngフォームの書き換え
+  function(){
+    //ここに内容を書く！！
+    //マップ遷移の関数すべてにこの関数を記入する！
+  }
+
+  // input_nameのテキストフォームが変更されたときのイベント
+  window.addEventListener('DOMContentLoaded', function(){
+    input_name.addEventListener("change",function(){
+      document.getElementById("note_seach").value = document.getElementById("input_name").value;
+      geocode()
+    });
+  });
+
+  // スポット検索欄でEnterキーによるsubmitを無効化
+  document.getElementById("note_seach").onkeypress = (e) => {
+    const key = e.keyCode || e.charCode || 0; // フォームに入力されたキーを取得
+    if (key == 13) { // 13はEnterキーのキーコード
+      e.preventDefault(); // submitを行わない
+      geocode() //代わりにマップ検索を行う
+    }
   }
 
 </script>
