@@ -1,9 +1,8 @@
-<h2>新規登録</h2>
-<br>
 <div class="container">
+  <h2>新規登録</h2>
   <div class="row">
 
-    <!--左半分-->
+    <!--左半分（入力フォーム）-->
     <div class="col-md-5">
       <%= form_with model: @note, local: true do |f| %>
         <div class="row form-group">
@@ -27,6 +26,12 @@
           <div class="col"><%= f.file_field :note_image, accept: 'image/*', class: "form-control-file" %></div>
         </div>
 
+        <%= f.hidden_field :prefecture %>
+        <%= f.hidden_field :city %>
+        <%= f.hidden_field :address %>
+        <%= f.hidden_field :latitude %>
+        <%= f.hidden_field :longitude %>
+
         <div class="row">
           <div class="col-md-2 offset-md-5">
             <% if f.object.new_record? %>
@@ -40,7 +45,7 @@
     </div>
 
     <!--右半分-->
-    <div class="col-md-auto">
+    <div class="col-md-7">
 
       <!--検索欄-->
       <form id='form'>
@@ -50,16 +55,49 @@
       <br>
       見つかった場所：<br>　<b id="seach_address"></b>
 
-      <!--マップ表示-->
       <div class="row mt-3">
-        <div class="col-md-6">
+        <!--マップ表示-->
+        <div class="col-md-9">
           <div id="map"></div>
+        </div>
+
+        <!--倍率変更ボタン-->
+        <div class="col-md-3 mt-auto">
+          <h6 class="text-center border border-secondary rounded-pill">縮尺変更</h6>
+          <table>
+            <thead>
+              <th class="text-center"><font size="1">画面中心</font></th>
+              <th class="text-center"><font size="1">マーカー</font></th>
+            </thead>
+            <tbody>
+              <tr>
+                <td><input type='button' value="全国" onclick="zoom_change(5)" class="btn btn-outline-primary w-100"></td>
+                <td><input type='button' value="全国" onclick="zoom_change(5)" class="btn btn-outline-primary w-100"></td>
+              </tr>
+              <tr>
+                <td><input type='button' value="地方" onclick="zoom_change(8)" class="btn btn-outline-primary w-100"></td>
+                <td><input type='button' value="地方" onclick="zoom_change(8)" class="btn btn-outline-primary w-100"></td>
+              </tr>
+              <tr>
+                <td class="text-center"><input type='button' value="県" onclick="zoom_change(10)" class="btn btn-outline-primary w-100"></td>
+                <td class="text-center"><input type='button' value="県" onclick="zoom_change(10)" class="btn btn-outline-primary w-100"></td>
+              </tr>
+              <tr>
+                <td class="text-center"><input type='button' value="市" onclick="zoom_change(13)" class="btn btn-outline-primary w-100"></td>
+                <td class="text-center"><input type='button' value="市" onclick="zoom_change(13)" class="btn btn-outline-primary w-100"></td>
+              </tr>
+              <tr>
+                <td><input type='button' value="町字" onclick="zoom_change(16)" class="btn btn-outline-primary w-100"></td>
+                <td><input type='button' value="町字" onclick="zoom_change(16)" class="btn btn-outline-primary w-100"></td>
+              </tr>
+            </tbody>
+          </table>
         </div>
       </div>
 
       <!--マーカー調整ボタン-->
       <form id='form' class='mt-2'>
-        <input type='button' value="現在の表示位置を選択" onclick="set_marker_with_display()">
+        <input type='button' value="今のマップ中央をマーク" onclick="set_marker_with_display()">
       </form>
 
       <!--デバッグ用-->
@@ -67,6 +105,7 @@
       <div id="city"></div>
       <div id="lat"></div>
       <div id="lng"></div>
+      <div id="test"></div>
     </div>
   </div>
 </div>
@@ -83,6 +122,7 @@
   let map
   let geocoder
   let marker
+  let marker_latlng
   let uluru
   let infowindow
   function initMap() {
@@ -105,11 +145,13 @@
       draggable: true   // ドラッグ可
     });
 
+    marker_latlng = uluru;
+
     // マーカーのドロップ（ドラッグ終了）時のイベント
     google.maps.event.addListener( marker, 'dragend', function(ev){
       // イベントの引数evの、プロパティ.latLngが緯度経度。
-      document.getElementById("lat").innerHTML = ev.latLng.lat();
-      document.getElementById('lng').innerHTML = ev.latLng.lng();
+      marker_latlng = ev.latLng;
+      geocode_lacation(ev.latLng);
     });
   }
 
@@ -134,7 +176,8 @@
       	var lat = results[0].geometry.location.lat(); //検索緯度
       	var lng = results[0].geometry.location.lng(); //検索経度
       	map.setCenter(results[0].geometry.location); //地図を遷移
-        move_marker(lat, lng)
+        move_marker(lat, lng) //マーカーを移動
+        hidden_field_change(results) //フォーム変更
       } else {
         alert('スポットが見つかりませんでした')
       }
@@ -152,13 +195,14 @@
       if(status==google.maps.GeocoderStatus.OK){
         document.getElementById('seach_address').innerHTML = results[0].formatted_address //viewに住所を表示
         move_marker(latlng.lat(), latlng.lng()) //マーカーを移動
+        hidden_field_change(results) //フォーム変更
       } else {
         alert('スポットが見つかりませんでした')
       }
     });
   }
 
-  // 国・県・市名を取得、type_code:0=>国、1=>県、2=>市
+  // ジオコード結果から国・県・市名を取得、type_code:0=>国、1=>県、2=>市
   function getLocalName(geoCodeResults, type_code){
     var type_array = ['country', 'administrative_area_level_1', 'locality'];
     // ジオコーディング結果を用いた処理
@@ -184,18 +228,37 @@
     });
     infowindow.setContent("この位置を登録する");
     infowindow.open(map, marker);
+
+    // マーカーのドロップ（ドラッグ終了）時のイベント
+    google.maps.event.addListener( marker, 'dragend', function(ev){
+      // イベントの引数evの、プロパティ.latLngが緯度経度。
+      marker_latlng = ev.latLng;
+      geocode_lacation(ev.latLng);
+    });
   }
 
   //現在の表示位置にマーカーを設置する
   function set_marker_with_display(){
-    var latlng = map.getCenter()
-    geocode_lacation(latlng)
+    var latlng = map.getCenter();
+    geocode_lacation(latlng);
   }
 
-  //lat、lngフォームの書き換え
-  function(){
-    //ここに内容を書く！！
-    //マップ遷移の関数すべてにこの関数を記入する！
+  //ジオコード結果に基づいてhiddenフォーム変更
+  function hidden_field_change(geoCodeResults){
+    document.getElementById("note_prefecture").value = getLocalName(geoCodeResults,1)
+    document.getElementById("note_city").value = getLocalName(geoCodeResults,2)
+    document.getElementById("note_address").value = geoCodeResults[0].formatted_address
+    document.getElementById("note_latitude").value = geoCodeResults[0].geometry.location.lat()
+    document.getElementById("note_longitude").value = geoCodeResults[0].geometry.location.lng()
+    // document.getElementById("test").innerHTML = getLocalName(geoCodeResults,1) + " " + getLocalName(geoCodeResults,2) + " " + geoCodeResults[0].formatted_address + " " + geoCodeResults[0].geometry.location.lat() + " " + geoCodeResults[0].geometry.location.lng()
+  }
+
+  //ズームレベル変更
+  function zoom_change(zoom_level, is_maker = true){
+    if(is_maker == true && marker_latlng){
+      map.setCenter(marker_latlng)
+    }
+    map.setZoom(zoom_level)
   }
 
   // input_nameのテキストフォームが変更されたときのイベント
