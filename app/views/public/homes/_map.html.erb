@@ -4,6 +4,8 @@
     </div>
   </div>
 
+   <div class="test"></div>
+
   <style>
   #map {
     height: 600px;
@@ -13,19 +15,69 @@
 
   <script>
   let map
+  let geocoder
+  let marker = [];
+  let uluru
+  let uluru_marker
+  let infowindow = [];
+  let before_marker_num = -1
 
-  function initMap(){
+  function initMap() {
     geocoder = new google.maps.Geocoder()
-
+    // 数値が入っていないとマップが非表示になってしまうためnilの場合は0を入れる
+    // contollerにて既存に登録している緯度と経度を変数に入れて渡す
+    uluru = {lat: <%= @lat || 0 %>, lng: <%= @lng || 0 %>};
     map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 35.625166, lng: 139.243611},
-      zoom: 12,
+      zoom: 10,
+      center: uluru,
+      streetViewControl: false, //ストリートビューに切り替えるボタンを非表示
+      mapTypeControl: false, //地図と航空写真を切り替えるボタンを非表示
+      scrollwheel: true, //マウスホイールによるzoomを許可
     });
 
-    marker = new google.maps.Marker({
-      position:  {lat: 35.625166, lng: 139.243611},
-      map: map
+    var marker_lats = <%= @marker_lats %>
+    var marker_lngs = <%= @marker_lngs %>
+    var marker_titles = '<%== JSON.dump(@marker_titles) %>'.replace(/\[/g, "").replace(/\]/g, "").split(',');
+    for (var i = 0; i < marker_lats.length; i++) {
+      uluru_marker = {lat: marker_lats[i], lng: marker_lngs[i]}
+
+      // マーカー設置
+      marker[i] = new google.maps.Marker({
+        position: uluru_marker,
+        map: map,
+        draggable: false   // ドラッグ可否
+      });
+
+      // マーカーにウィンドウ情報付与
+      infowindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+        content: marker_titles[i] // 吹き出しに表示する内容
+      });
+
+      // マーカーにクリックイベントを追加
+      markerEvent(i);
+    }
+  }
+  // マーカーにクリックイベントを追加
+  function markerEvent(i) {
+    google.maps.event.addListener( marker[i], 'click', function(ev) { // マーカーをクリックしたとき
+      // 吹き出しの表示
+      if(before_marker_num !== -1){
+        infowindow[before_marker_num].close()
+      }
+      infowindow[i].open(map, marker[i]);
+      before_marker_num = i
     });
   }
+
+    //   infowindow.setContent("この位置を登録する");
+    // infowindow.open(map, marker);
+
+    //     google.maps.event.addListener( marker, 'dragend', function(ev){
+    //   // イベントの引数evの、プロパティ.latLngが緯度経度。
+    //   marker_latlng = ev.latLng;
+    //   geocode_lacation(ev.latLng);
+    // });
+
+
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>

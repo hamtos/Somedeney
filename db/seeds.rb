@@ -165,4 +165,5 @@ end
   Note.create(
     { customer_id: 1, title: title, body: body, prefecture: prefecture, city: city, address: address, latitude: latitude, longitude: longitude }
   )
+
 end

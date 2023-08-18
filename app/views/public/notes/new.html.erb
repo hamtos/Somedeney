@@ -133,7 +133,10 @@
     uluru = {lat: <%= @lat || 0 %>, lng: <%= @lng || 0 %>};
     map = new google.maps.Map(document.getElementById('map'), {
       zoom: 16,
-      center: uluru
+      center: uluru,
+      streetViewControl: false, //ストリートビューに切り替えるボタンを非表示
+      mapTypeControl: false, //地図と航空写真を切り替えるボタンを非表示
+      scrollwheel: true, //マウスホイールによるzoomを許可
     });
     contentString = "登録位置"
     infowindow = new google.maps.InfoWindow({
