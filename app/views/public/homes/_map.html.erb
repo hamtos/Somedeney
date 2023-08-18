@@ -8,7 +8,7 @@
 
   <style>
   #map {
-    height: 600px;
+    height: 500px;
     width: 100%;
   }
   </style>
@@ -79,6 +79,8 @@
     function(results, status){
       if(status==google.maps.GeocoderStatus.OK){
         document.getElementById('seach_address').innerHTML = results[0].formatted_address
+        const quickNoteButton = document.getElementById("note_button"); //クイック投稿ボタンを取得
+        quickNoteButton.style.display = "block"; //ボタンを表示
       	var lat = results[0].geometry.location.lat(); //検索緯度
       	var lng = results[0].geometry.location.lng(); //検索経度
       	map.setCenter(results[0].geometry.location); //地図を遷移
@@ -102,6 +104,8 @@
     });
     serch_infowindow.open(map, seach_marker);
   }
+
+
 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>

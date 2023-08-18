@@ -1,0 +1,20 @@
+<div class="container mt-4">
+  <h4 class="row">
+    <div class="col-md6">
+      <b><%= @note.title %></b>
+      <div class="d-inline-block px-2 border border-secondary rounded-pill ml-5"><%= @note.prefecture %></div>
+      <div class="d-inline-block px-2 border border-secondary rounded-pill ml-3"><%= @note.city %></div>
+  </h4>
+    <div class="row p-1 mt-3 border border-dark" style="height: 300px; width: 400px">
+      <%= @note.body %>
+    </div>
+  </div>
+  <div class="col-md6">
+    <i class="fa-solid fa-pen"></i>
+    <div class="row">
+      <% if @note.image.attached? %>
+        <%= image_tag @note.get_image(200, 200) %>
+      <% end %>
+    </div>
+  </div>
+</div>
