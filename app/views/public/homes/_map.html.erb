@@ -26,7 +26,7 @@
     geocoder = new google.maps.Geocoder()
     // 数値が入っていないとマップが非表示になってしまうためnilの場合は0を入れる
     // contollerにて既存に登録している緯度と経度を変数に入れて渡す
-    uluru = {lat: <%= @lat || 0 %>, lng: <%= @lng || 0 %>};
+    uluru = {lat: <%= @lat || 35.625166 %>, lng: <%= @lng || 139.243611 %>};
     map = new google.maps.Map(document.getElementById('map'), {
       zoom: 10,
       center: uluru,
@@ -69,15 +69,39 @@
     });
   }
 
-    //   infowindow.setContent("この位置を登録する");
-    // infowindow.open(map, marker);
+  //入力文字から住所検索
+  function geocode() {
+    geocoder.geocode(
+    {
+      'address': document.getElementById('top_seach').value,
+      'region': 'jp'
+    },
+    function(results, status){
+      if(status==google.maps.GeocoderStatus.OK){
+        document.getElementById('seach_address').innerHTML = results[0].formatted_address
+      	var lat = results[0].geometry.location.lat(); //検索緯度
+      	var lng = results[0].geometry.location.lng(); //検索経度
+      	map.setCenter(results[0].geometry.location); //地図を遷移
+        move_marker(lat, lng) //マーカーを移動
+      } else {
+        alert('スポットが見つかりませんでした')
+      }
+    });
+  }
 
-    //     google.maps.event.addListener( marker, 'dragend', function(ev){
-    //   // イベントの引数evの、プロパティ.latLngが緯度経度。
-    //   marker_latlng = ev.latLng;
-    //   geocode_lacation(ev.latLng);
-    // });
-
+  // マーカー移動
+  function move_marker(latitude, longitude) {
+    uluru = {lat: latitude, lng: longitude};
+    var seach_marker = new google.maps.Marker({
+      position: uluru,
+      map: map,
+      draggable: false   // true=>ドラッグ可能
+    });
+    var serch_infowindow = new google.maps.InfoWindow({ // 吹き出しの追加
+        content: document.getElementById('top_seach').value // 吹き出しに表示する内容
+    });
+    serch_infowindow.open(map, seach_marker);
+  }
 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>

@@ -1,10 +1,16 @@
 class Public::HomesController < ApplicationController
 
   def top
-    @lat = 35.625166
-    @lng = 139.243611
-    @marker_lats = Note.pluck(:latitude)
-    @marker_lngs = Note.pluck(:longitude)
-    @marker_titles = Note.pluck(:title)
+    # マップ
+    if test = Note.where(customer_id: current_customer.id).order(updated_at: :desc).first
+      @lat = test.latitude
+      @lng = test.longitude
+    end
+    @marker_lats = Note.where.not(latitude: nil).pluck(:latitude)
+    @marker_lngs = Note.where.not(latitude: nil).pluck(:longitude)
+    @marker_titles = Note.where.not(latitude: nil).pluck(:title)
+
+    # 全体の投稿（右サイド）
+    @notes = Note.all.limit(10)
   end
 end

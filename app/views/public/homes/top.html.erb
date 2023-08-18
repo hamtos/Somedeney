@@ -2,12 +2,32 @@
 <div class="container-fluid mt-3">
   <div class="row">
     <!--左サイド-->
-    <div class="col-md-2">test</div>
+    <div class="col-md-2">
+      <h6 class="text-center border py-1"><b>自分の投稿</b></h6>
+      <% @notes.each do |note| %>
+        <%= render "/public/homes/list", note: note %>
+      <% end %>
+    </div>
     <!--中央-->
     <div class="col-md-8">
       <%= render '/public/homes/map' %>
+
+      <!--検索欄-->
+      <form id='form'>
+        <input type="text" id="top_seach" required minlength="2" size="35" placeholder="スポット名を検索" />
+        <input type='button' value="スポット検索" onclick="geocode()">
+      </form>
+      <br>
+      見つかった場所：<br>　<b id="seach_address"></b>
+
     </div>
     <!--右サイド-->
-    <div class="col-md-2">test</div>
+    <div class="col-md-2">
+      <h6 class="text-center border py-1"><b>付近の投稿</b></h6>
+      <% @notes.each do |note| %>
+        <%= render "/public/homes/list", note: note %>
+      <% end %>
+    </div>
+
   </div>
 </div>
