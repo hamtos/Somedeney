@@ -15,6 +15,9 @@ class Note < ApplicationRecord
   reverse_geocoded_by :latitude, :longitude
   after_validation :reverse_geocode
 
+  # 削除されていないデータ
+  scope :active, -> { where(is_deleted: false) }
+
   # 画像表示メソッド
   def get_image(width, height)
     image.variant(resize_to_limit: [width, height]).processed

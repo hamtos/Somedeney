@@ -26,9 +26,22 @@ class Public::NotesController < ApplicationController
     @note = Note.find(params[:id])
   end
 
+  def edit
+    @note = Note.find(params[:id])
+  end
+
+  def update
+    @note = Note.find(params[:id])
+    if @note.update(note_params)
+      redirect_to notes_customers_path
+    else
+      redirect_back fallback_location: root_path
+    end
+  end
+
   private
 
   def note_params
-    params.require(:note).permit(:customer_id, :title, :body, :prefecture, :address, :city, :latitude, :longitude, :image)
+    params.require(:note).permit(:customer_id, :title, :body, :prefecture, :address, :city, :latitude, :longitude, :image, :is_deleted)
   end
 end

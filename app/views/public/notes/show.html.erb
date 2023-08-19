@@ -1,20 +1,61 @@
 <div class="container mt-4">
-  <h4 class="row">
-    <div class="col-md6">
-      <b><%= @note.title %></b>
-      <div class="d-inline-block px-2 border border-secondary rounded-pill ml-5"><%= @note.prefecture %></div>
-      <div class="d-inline-block px-2 border border-secondary rounded-pill ml-3"><%= @note.city %></div>
-  </h4>
-    <div class="row p-1 mt-3 border border-dark" style="height: 300px; width: 400px">
-      <%= @note.body %>
+  <div class="row">
+    <h4><b><%= @note.title %></b></h4>
+    <div class="d-flex align-items-center px-2 border border-secondary rounded-pill ml-5"><%= @note.prefecture %></div>
+    <div class="d-flex align-items-center px-2 border border-secondary rounded-pill ml-3"><%= @note.city %></div>
+
+    <div class="d-flex">
+      <% if @note.customer.id = current_customer.id %>
+        <!--編集機能-->
+        <%= link_to edit_note_path(@note), class: "btn btn-outline-transparent",
+                    data: { toggle: "tooltip", disable_with: '送信中'}, title: "編集する" do %>
+          <i class="fa-solid fa-pen fa-xl"></i>
+        <% end %>
+
+        <!--投稿削除機能-->
+        <%= form_with model: @note, method: :patch do |f| %>
+          <%= f.hidden_field :is_deleted, :value => true %>
+          <%= f.button type: :submit, class: "btn btn-outline-transparent",
+                        data: { toggle: "tooltip", disable_with: '送信中', confirm: "この投稿を削除しますか？"},
+                        title: "投稿の削除" do %>
+            <i class="fa-solid fa-trash fa-xl"></i>
+          <% end %>
+        <% end %>
+
+        <!--計画作成機能-->
+        <%= link_to new_plan_path(note_id: @note.id), class: "btn btn-outline-transparent",
+                    data: { toggle: "tooltip", disable_with: '送信中'}, title: "この投稿から計画を作成する" do %>
+          <i class="fa-solid fa-plane fa-xl"></i>
+        <% end %>
+
+      <% else %>
+        <!--投稿複製-->
+        <%= form_with model: @note, method: :patch do |f| %>
+          <%= f.hidden_field :is_deleted, :value => true %>
+          <%= f.button type: :submit, class: "btn btn-outline-transparent", data: { disable_with: '送信中', confirm: "この投稿を削除しますか？"} do %>
+            <i class="fa-regular fa-copy fa-xl"></i>
+          <% end %>
+        <% end %>
+      <% end %>
     </div>
+
   </div>
-  <div class="col-md6">
-    <i class="fa-solid fa-pen"></i>
-    <div class="row">
+  <div class="row">
+    <div class="col-md6">
+      <div class="row p-1 mt-3 ml-5 border border-dark" style="min-height: 200px; width: 350px">
+        <%= @note.body %>
+      </div>
+    </div>
+    <div class="col-md6">
       <% if @note.image.attached? %>
         <%= image_tag @note.get_image(200, 200) %>
       <% end %>
     </div>
   </div>
 </div>
+
+<script>
+  $(document).ready(function () {
+    $('[data-toggle="tooltip"]').tooltip();
+  });
+</script>

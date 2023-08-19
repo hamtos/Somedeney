@@ -19,10 +19,10 @@ Rails.application.routes.draw do
     patch 'customers/information/edit' => 'customers#update'
     get 'customers/confirm' => 'customers#confirm'
     patch 'customers/leave' => 'customers#leave'
-    resources :notes, only: [:index, :new, :create, :show, :edit, :update]
     get 'notes/customers' => 'notes#my_index'
+    resources :notes, only: [:index, :new, :create, :show, :edit, :update]
     resources :tags, only: [:index, :new, :create]
-    resources :plans, only: [:index, :new, :create, :show]
+    resources :plans, only: [:index, :new, :create, :show, :edit, :update]
     post '/plans/confirm' => 'plans#confirm'
   end
 
