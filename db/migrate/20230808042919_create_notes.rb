@@ -9,6 +9,7 @@ class CreateNotes < ActiveRecord::Migration[6.1]
       t.string :address, null:true
       t.float :latitude, null: true
       t.float :longitude, null: true
+      t.boolean :is_origin, null: false, default: true # 投稿をコピーした場合はfalse
       t.boolean :is_visited, null: false, default: false
       t.boolean :is_deleted, null: false, default: false
       t.integer :star, null: true

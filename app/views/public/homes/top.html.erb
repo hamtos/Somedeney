@@ -3,14 +3,10 @@
   <div class="row">
     <!--左サイド-->
     <div class="col-md-3">
-      <h6 class="text-center border py-1" style="max-width: 200px;"><b>自分の投稿</b></h6>
-      <% if @my_notes %>
-        <% @my_notes.each do |note| %>
-          <%= render "/public/homes/list", note: note %>
-        <% end %>
-      <% else %>
-        <div class="text-center border p-1" style="max-width: 200px;">投稿はありません</div>
-      <% end %>
+      <div class="float-right">
+        <h6 class="text-center border py-1" style="width: 190px;"><b>自分の投稿</b></h6>
+        <%= render "/public/homes/list", notes: @my_notes %>
+      </div>
     </div>
 
     <!--中央-->
@@ -32,7 +28,20 @@
         </div>
         <% if customer_signed_in? %>
           <div class="mt-2 ml-3">
-            <button id="note_button" style="display: none;">このスポットを保存</button>
+            <!--<button id="note_button" style="display: none;">クイック保存</button>-->
+            <%= form_with model: @note, local: true do |f| %>
+              <%= f.hidden_field :customer_id, :value => current_customer.id  %>
+              <%= f.hidden_field :is_origin, :value => false %>
+              <!--hidden_field_changeによって書き換え-->
+              <%= f.hidden_field :title %>
+              <%= f.hidden_field :prefecture %>
+              <%= f.hidden_field :city %>
+              <%= f.hidden_field :address %>
+              <%= f.hidden_field :latitude %>
+              <%= f.hidden_field :longitude %>
+              <!--ここまで-->
+              <%= f.submit "クイック保存", class: "btn btn-info", id: "note_button", style: "display: none;" %>
+            <% end %>
           </div>
         <% end %>
       </div>
@@ -40,12 +49,9 @@
     </div>
     <!--右サイド-->
     <div class="col-md-3">
-      <h6 class="text-center border py-1" style="max-width: 200px;"><b>付近の投稿</b></h6>
-      <% @another_notes.each do |note| %>
-        <%= render "/public/homes/list", note: note %>
-      <% end %>
+      <h6 class="text-center border py-1" style="width: 190px;"><b>付近の投稿</b></h6>
+      <%= render "/public/homes/list", notes: @another_notes %>
     </div>
-
   </div>
 </div>
 

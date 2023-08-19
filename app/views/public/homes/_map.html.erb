@@ -85,6 +85,7 @@
       	var lng = results[0].geometry.location.lng(); //検索経度
       	map.setCenter(results[0].geometry.location); //地図を遷移
         move_marker(lat, lng) //マーカーを移動
+        hidden_field_change(results)
       } else {
         alert('スポットが見つかりませんでした')
       }
@@ -105,7 +106,31 @@
     serch_infowindow.open(map, seach_marker);
   }
 
+  //ジオコード結果に基づいてhiddenフォーム変更
+  function hidden_field_change(geoCodeResults){
+    document.getElementById("note_title").value = document.getElementById('top_seach').value
+    document.getElementById("note_prefecture").value = getLocalName(geoCodeResults,1)
+    document.getElementById("note_city").value = getLocalName(geoCodeResults,2)
+    document.getElementById("note_address").value = geoCodeResults[0].formatted_address
+    document.getElementById("note_latitude").value = geoCodeResults[0].geometry.location.lat()
+    document.getElementById("note_longitude").value = geoCodeResults[0].geometry.location.lng()
+    // document.getElementById("test").innerHTML = getLocalName(geoCodeResults,1) + " " + getLocalName(geoCodeResults,2) + " " + geoCodeResults[0].formatted_address + " " + geoCodeResults[0].geometry.location.lat() + " " + geoCodeResults[0].geometry.location.lng()
+  }
 
+  // ジオコード結果から国・県・市名を取得、type_code:0=>国、1=>県、2=>市
+  function getLocalName(geoCodeResults, type_code){
+    var type_array = ['country', 'administrative_area_level_1', 'locality'];
+    // ジオコーディング結果を用いた処理
+    var geoCnt = geoCodeResults[0].address_components.length;
+    var prefName = "";
+    for (var i = 0; i < geoCnt; i++) {
+        if (geoCodeResults[0].address_components[i].types[0] === type_array[type_code]) {
+            prefName = geoCodeResults[0].address_components[i].long_name;
+            return prefName;
+        }
+    }
+    return prefName;
+  }
 
   </script>
   <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>

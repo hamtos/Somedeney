@@ -1,9 +1,19 @@
-<%= link_to note_path(note), style: "color: black;" do %>
-  <div class="border p-1" style="max-width: 200px;">
-    <b><%= note.title %></b><br>
-    <font size="2">
-      <div class="d-inline-block px-2 border border-secondary rounded-pill"><%= note.prefecture %></div>
-      <div class="d-inline-block px-2 border border-secondary rounded-pill"><%= note.city %></div>
-    </font>
+<% if notes %>
+  <% notes.each do |note| %>
+    <%= link_to note_path(note), style: "color: black;" do %>
+      <div class="border p-1" style="width: 190px;">
+        <b><%= note.title %></b><br>
+        <!--<i class="fa-regular fa-message"></i> クリックすると、マップのマーカーウィンドウがポップする-->
+        <font size="2">
+          <div class="d-inline-block px-2 border border-secondary rounded-pill"><%= note.prefecture %></div>
+          <div class="d-inline-block px-2 border border-secondary rounded-pill"><%= note.city %></div>
+        </font>
+      </div>
+    <% end %>
+  <% end %>
+  <div class="mt-2">
+    <%= paginate notes %>
   </div>
+<% else %>
+  <div class="d-flex justify-content-center align-items-center border p-1" style="width: 190px;height: 60px">投稿はありません</div>
 <% end %>

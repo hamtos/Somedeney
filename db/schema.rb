@@ -95,6 +95,7 @@ ActiveRecord::Schema.define(version: 2023_08_08_064613) do
     t.string "address"
     t.float "latitude"
     t.float "longitude"
+    t.boolean "is_origin", default: true, null: false
     t.boolean "is_visited", default: false, null: false
     t.boolean "is_deleted", default: false, null: false
     t.integer "star"
