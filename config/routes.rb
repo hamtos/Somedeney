@@ -20,6 +20,7 @@ Rails.application.routes.draw do
     get 'customers/confirm' => 'customers#confirm'
     patch 'customers/leave' => 'customers#leave'
     get 'notes/customers' => 'notes#my_index'
+    post 'notes/copy' => 'notes#copy_record'
     resources :notes, only: [:index, :new, :create, :show, :edit, :update]
     resources :tags, only: [:index, :new, :create]
     resources :plans, only: [:index, :new, :create, :show, :edit, :update]

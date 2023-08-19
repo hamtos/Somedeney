@@ -24,6 +24,7 @@ class Public::NotesController < ApplicationController
 
   def show
     @note = Note.find(params[:id])
+    @new_note = Note.new
   end
 
   def edit
@@ -36,6 +37,28 @@ class Public::NotesController < ApplicationController
       redirect_to notes_customers_path
     else
       redirect_back fallback_location: root_path
+    end
+  end
+
+  def copy_record
+    source_record = Note.find(params[:note_id])
+    new_record = Note.new
+    new_record.customer_id = current_customer.id
+    new_record.title = source_record.title
+    new_record.body = source_record.body
+    new_record.prefecture = source_record.prefecture
+    new_record.city = source_record.city
+    new_record.address = source_record.address
+    new_record.latitude = source_record.latitude
+    new_record.longitude = source_record.longitude
+    if source_record.image.attached?
+      new_record.image = source_record.image
+    end
+    if new_record.save
+      redirect_to note_path(new_record), notice: '投稿を複製しました'
+    else
+      flash[:alert] = '複製に失敗しました'
+      render :show
     end
   end
 

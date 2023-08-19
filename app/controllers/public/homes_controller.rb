@@ -14,9 +14,9 @@ class Public::HomesController < ApplicationController
 
     # 全体の投稿（右サイド）
     if customer_signed_in?
-      @another_notes = Note.active.where.not(customer_id: current_customer.id, is_origin: true).order(created_at: :desc).page(params[:page]).per(10)
+      @another_notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(created_at: :desc).page(params[:page]).per(10)
     else
-      @another_notes = Note.active.where.not(is_origin: true).order(created_at: :desc).page(params[:page]).per(10)
+      @another_notes = Note.active.where(is_origin: true).order(created_at: :desc).page(params[:page]).per(10)
     end
 
     # 全体の投稿（左サイド）

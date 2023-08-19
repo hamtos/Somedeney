@@ -5,35 +5,39 @@
     <div class="d-flex align-items-center px-2 border border-secondary rounded-pill ml-3"><%= @note.city %></div>
 
     <div class="d-flex">
-      <% if @note.customer.id = current_customer.id %>
-        <!--編集機能-->
-        <%= link_to edit_note_path(@note), class: "btn btn-outline-transparent",
-                    data: { toggle: "tooltip", disable_with: '送信中'}, title: "編集する" do %>
-          <i class="fa-solid fa-pen fa-xl"></i>
-        <% end %>
-
-        <!--投稿削除機能-->
-        <%= form_with model: @note, method: :patch do |f| %>
-          <%= f.hidden_field :is_deleted, :value => true %>
-          <%= f.button type: :submit, class: "btn btn-outline-transparent",
-                        data: { toggle: "tooltip", disable_with: '送信中', confirm: "この投稿を削除しますか？"},
-                        title: "投稿の削除" do %>
-            <i class="fa-solid fa-trash fa-xl"></i>
+      <% if customer_signed_in? %>
+        <% if @note.customer_id == current_customer.id %>
+          <!--編集機能-->
+          <%= link_to edit_note_path(@note), class: "btn btn-outline-transparent",
+                      data: { toggle: "tooltip", disable_with: '送信中'}, title: "編集する" do %>
+            <i class="fa-solid fa-pen fa-xl"></i>
           <% end %>
-        <% end %>
 
-        <!--計画作成機能-->
-        <%= link_to new_plan_path(note_id: @note.id), class: "btn btn-outline-transparent",
-                    data: { toggle: "tooltip", disable_with: '送信中'}, title: "この投稿から計画を作成する" do %>
-          <i class="fa-solid fa-plane fa-xl"></i>
-        <% end %>
+          <!--投稿削除機能-->
+          <%= form_with model: @note, method: :patch do |f| %>
+            <%= f.hidden_field :is_deleted, :value => true %>
+            <%= f.button type: :submit, class: "btn btn-outline-transparent",
+                          data: { toggle: "tooltip", disable_with: '送信中', confirm: "この投稿を削除しますか？"},
+                          title: "投稿の削除" do %>
+              <i class="fa-solid fa-trash fa-xl"></i>
+            <% end %>
+          <% end %>
 
-      <% else %>
-        <!--投稿複製-->
-        <%= form_with model: @note, method: :patch do |f| %>
-          <%= f.hidden_field :is_deleted, :value => true %>
-          <%= f.button type: :submit, class: "btn btn-outline-transparent", data: { disable_with: '送信中', confirm: "この投稿を削除しますか？"} do %>
-            <i class="fa-regular fa-copy fa-xl"></i>
+          <!--計画作成機能-->
+          <%= link_to new_plan_path(note_id: @note.id), class: "btn btn-outline-transparent",
+                      data: { toggle: "tooltip", disable_with: '送信中'}, title: "この投稿から計画を作成する" do %>
+            <i class="fa-solid fa-plane fa-xl"></i>
+          <% end %>
+
+        <% else %>
+          <!--投稿コピー-->
+          <%= form_with url: notes_copy_path, local: true do |f| %>
+            <%= f.hidden_field :note_id, :value => @note.id  %>
+            <%= f.button type: :submit, class: "btn btn-outline-transparent",
+              data: { toggle: "tooltip", disable_with: '送信中', confirm: "この投稿をコピーしますか？"},
+              title: "自身のリストにコピー" do %>
+              <i class="fa-regular fa-copy fa-xl"></i>
+            <% end %>
           <% end %>
         <% end %>
       <% end %>
