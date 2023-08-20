@@ -1,7 +1,7 @@
 <div class="container mt-5">
-  <h1>投稿機能用seedデータ作成</h1>
-  <input type='text' id='input_text' size="90">
-  <input type='button' value="実行" onclick="geocode()">
+  <h1>タグ用seedデータ作成</h1>
+  <input type='number' id='input_note_count' placeholder='noteのレコード数' size="90">
+  <input type='button' value="実行" onclick="make_seed()">
   <br>
   <div id="debug"></div>
   <br>
@@ -9,56 +9,23 @@
 </div>
 
 <script>
-  let geocoder
-
-  function initMap() {
-    geocoder = new google.maps.Geocoder()
-  }
-
-  function geocode() {
-    var text_arr = document.getElementById('input_text').value.split(/\s/);
-    // document.getElementById('debug').innerHTML = text_arr
-    for(const seach_word of text_arr){
-      geocoder.geocode(
-      {
-        'address': seach_word,
-        'region': 'jp'
-      },
-      function(results, status){
-        if(status==google.maps.GeocoderStatus.OK){
-          var prefecture = getLocalName(results,1) //県
-          var city = getLocalName(results,2) //市
-          var address = results[0].formatted_address
-        	var lat = results[0].geometry.location.lat(); //緯度
-      	  var lng = results[0].geometry.location.lng(); //経度
-          document.getElementById('result').value += `[\"${seach_word}\",\"説明\",\"${prefecture}\",\"${city}\",\"${address}\",${lat},${lng}],\n`
-        } else {
-          alert(`スポットが見つかりませんでした。=>${seach_word}`)
+  function make_seed(){
+    var note_count = document.getElementById('input_note_count').value
+    for (let i = 0; i < note_count; i++) {
+      var random_tag_count = generateRandomNumberInRange(1, 10);
+      const uniqueNumbers = [];
+      for (let j = 0; j < random_tag_count; j++) {
+        var random_tag_id = generateRandomNumberInRange(1, 76);
+        if (!uniqueNumbers.includes(random_tag_id)) { //タグIDが重複したレコードは保存しない
+          uniqueNumbers.push(random_tag_id);
+          document.getElementById('result').value += `[${random_tag_id},${i}],\n`
         }
-      });
+      }
     }
   }
 
-  // ジオコード結果から国・県・市名を取得、type_code:0=>国、1=>県、2=>市
-  function getLocalName(geoCodeResults, type_code){
-    var type_array = ['country', 'administrative_area_level_1', 'locality'];
-    // ジオコーディング結果を用いた処理
-    var geoCnt = geoCodeResults[0].address_components.length;
-    var prefName = "";
-    for (var i = 0; i < geoCnt; i++) {
-        if (geoCodeResults[0].address_components[i].types[0] === type_array[type_code]) {
-            prefName = geoCodeResults[0].address_components[i].long_name;
-            return prefName;
-        }
-    }
-    return prefName;
+  // ランダムな整数を生成
+  function generateRandomNumberInRange(min, max) {
+    return Math.floor(Math.random() * (max - min + 1)) + min;
   }
 </script>
-
-<script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>
-
-       <!-- document.getElementById('seach_address').innerHTML = results[0].formatted_address-->
-       <!-- document.getElementById('prefecture').innerHTML = "都道府県：" + getLocalName(results,1); //デバッグ用-->
-      	<!--document.getElementById('city').innerHTML = "市町村：" + getLocalName(results,2); //デバッグ用-->
-      	<!--var lat = results[0].geometry.location.lat(); //検索緯度-->
-      	<!--var lng = results[0].geometry.location.lng(); //検索経度-->

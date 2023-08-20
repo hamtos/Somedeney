@@ -2,7 +2,7 @@
   <div class="scroll-container border" style: "width: 190px;">
     <% notes.each do |note| %>
       <%= link_to note_path(note), style: "color: black; width: 100%;" do %>
-        <div class="border px-1 pb-1" style="width: 100%; height: 80px">
+        <div class="border-bottom px-1 pb-1" style="width: 100%; height: 80px">
           <div class="text-right">
             <font size="2">
               <div class="d-inline-block px-1"><b># <%= note.prefecture %></b></div>
