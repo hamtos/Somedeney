@@ -1,34 +1,9 @@
 <div class="container">
   <!--検索フォーム-->
-  <div class="border border-dark rounded mt-2 p-2">
-    <div class="row" id='form'>
-      <div class="col-lg-8 col-md-7">
-        <input type="text" class="form-control" id="top_seach" required minlength="2" placeholder="スポットを検索" />
-      </div>
-      <div class="col-lg-4 col-md-5">
-        <input type='button' class='btn btn-success' value="スポット検索" onclick="geocode()">
-      </div>
-    </div>
-    <div class="mt-2">
-      <b>見つかった場所：</b><br>　<b id="seach_address"></b>
-    </div>
-    <% if customer_signed_in? %>
-      <div class="mt-2 ml-3">
-        <!--<button id="note_button" style="display: none;">クイック保存</button>-->
-        <%= form_with model: @note, local: true do |f| %>
-          <%= f.hidden_field :customer_id, :value => current_customer.id  %>
-          <%= f.hidden_field :is_origin, :value => false %>
-          <!--hidden_field_changeによって書き換え-->
-          <%= f.hidden_field :title %>
-          <%= f.hidden_field :prefecture %>
-          <%= f.hidden_field :city %>
-          <%= f.hidden_field :address %>
-          <%= f.hidden_field :latitude %>
-          <%= f.hidden_field :longitude %>
-          <!--ここまで-->
-          <%= f.submit "クイック保存", class: "btn btn-info", id: "note_button", style: "display: none;" %>
-        <% end %>
-      </div>
+  <div class="mt-2 ml-4 p-2">
+    <%= form_tag(notes_path, method: "get") do %>
+      <%= text_field_tag(:search, params[:search], placeholder: "キーワードを入力", size: 30) %>
+      <%= submit_tag("検索") %>
     <% end %>
   </div>
 
@@ -36,7 +11,7 @@
   <div class="container-note-index mt-3">
     <div class="row-note-index">
       <% @notes.each do |note| %>
-        <div class="border m-1">
+        <div class="border rounded m-1 card-onmouse">
           <%= render '/public/notes/card', note: note %>
         </div>
       <% end %>

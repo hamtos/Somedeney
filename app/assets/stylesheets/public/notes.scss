@@ -33,3 +33,9 @@
 .container-note-index::-webkit-scrollbar-thumb:hover {
   background-color: #555;
 }
+
+// 投稿要素にマウスオンした時に、色を変える
+.card-onmouse:hover {
+  background-color: #afeeee;
+  transition: background-color 0.5s; /* 背景色の変化を～秒かけてアニメーションする */
+}

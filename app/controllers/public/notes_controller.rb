@@ -28,7 +28,16 @@ class Public::NotesController < ApplicationController
   end
 
   def index
-    @notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(created_at: :desc).limit(100)
+    # 自分の投稿は除く
+    if customer_signed_in?
+      @notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(created_at: :desc).limit(100)
+    else
+      @notes = Note.active.where(is_origin: true).order(created_at: :desc).limit(100)
+    end
+
+    if params[:search]
+      @notes = @notes.joins(:tags).where("notes.title LIKE :search OR notes.prefecture LIKE :search OR notes.city LIKE :search OR tags.name LIKE :search", search: "%#{params[:search]}%")
+    end
   end
 
   def edit
