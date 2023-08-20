@@ -1,0 +1,35 @@
+<div class="px-1" style="width: 190px; height: 80px">
+  <%= link_to note_path(note), style: "color: black;" do %>
+    <div class="text-right">
+      <font size="2">
+        <div class="d-inline-block px-1"><b># <%= note.prefecture %></b></div>
+        <div class="d-inline-block px-1"><b># <%= note.city %></b></div>
+      </font><br>
+    </div>
+    <b class="ml-1"><%= note.title %></b><br>
+    <div class="tag-container">
+      <font size="2">
+        <% note.tags.each do |tag| %>
+          <div class="d-inline-block pr-1"># <%= tag.name %></div>
+        <% end %>
+      </font>
+    </div>
+    <!--<i class="fa-regular fa-message"></i> クリックすると、マップのマーカーウィンドウがポップする-->
+  <% end %>
+</div>
+
+<script>
+  // タグコンテナ内のタグ要素を取得
+  const tagContainer = document.querySelector('.tag-container');
+  const tags = tagContainer.querySelectorAll('.tag');
+
+  // タグ要素の幅を確認して省略表示
+  let totalWidth = 0;
+  tags.forEach(tag => {
+    totalWidth += tag.offsetWidth;
+  });
+
+  if (totalWidth > tagContainer.offsetWidth) {
+    tagContainer.classList.add('ellipsis');
+  }
+</script>

@@ -1,3 +1,35 @@
-// Place all the styles related to the public/notes controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: https://sass-lang.com/
+.container-note-index {
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  max-height: 600px; /* 表示する高さ */
+  overflow-y: auto; /* 縦方向にのみスクロール */
+  padding-left: 40px;
+}
+
+// ブロックを縦横に並べる
+.row-note-index {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* スクロールバー全体のスタイル */
+.container-note-index::-webkit-scrollbar {
+  width: 7px; /* スクロールバーの幅 */
+}
+
+/* スクロールバーのトラック部分のスタイル */
+.container-note-index::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* トラック部分の背景色 */
+}
+
+/* スクロールバーのハンドル部分（つまみ）のスタイル */
+.container-note-index::-webkit-scrollbar-thumb {
+  background-color: #888; /* ハンドル部分の背景色 */
+  border-radius: 5px; /* ハンドル部分の角丸 */
+}
+
+/* スクロールバーのハンドル部分がホバーしたときのスタイル */
+.container-note-index::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}

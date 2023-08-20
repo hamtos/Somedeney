@@ -27,6 +27,10 @@ class Public::NotesController < ApplicationController
     @new_note = Note.new
   end
 
+  def index
+    @notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(created_at: :desc).limit(100)
+  end
+
   def edit
     @note = Note.find(params[:id])
   end
