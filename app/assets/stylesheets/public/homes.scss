@@ -1,3 +1,33 @@
-// Place all the styles related to the public/homes controller here.
-// They will automatically be included in application.css.
-// You can use Sass (SCSS) here: https://sass-lang.com/
+// block要素のスクロール
+.scroll-container {
+  max-height: 600px;
+  width: 210px;
+  overflow-y: auto;
+}
+/* スクロールバー全体のスタイル */
+.scroll-container::-webkit-scrollbar {
+  width: 7px; /* スクロールバーの幅 */
+}
+
+/* スクロールバーのトラック部分のスタイル */
+.scroll-container::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* トラック部分の背景色 */
+}
+
+/* スクロールバーのハンドル部分（つまみ）のスタイル */
+.scroll-container::-webkit-scrollbar-thumb {
+  background-color: #888; /* ハンドル部分の背景色 */
+  border-radius: 5px; /* ハンドル部分の角丸 */
+}
+
+/* スクロールバーのハンドル部分がホバーしたときのスタイル */
+.scroll-container::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
+
+.tag-container {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  width: 190px; /* 例：幅を適切に指定してください */
+}
