@@ -5,16 +5,11 @@
       <%= text_field_tag(:search, params[:search], placeholder: "キーワードを入力", size: 30) %>
       <%= submit_tag("検索") %>
     <% end %>
+    <% if @search_word.present? %>
+      <%= link_to "home", notes_path %> <i class="fas fa-angle-right"></i> "<%= @search_word %>"
+    <% end %>
   </div>
 
   <!--投稿一覧表示-->
-  <div class="container-note-index mt-3">
-    <div class="row-note-index">
-      <% @notes.each do |note| %>
-        <div class="border rounded m-1 card-onmouse">
-          <%= render '/public/notes/card', note: note %>
-        </div>
-      <% end %>
-    </div>
-  </div>
+  <%= render '/public/notes/list_index', notes: @notes %>
 </div>

@@ -30,13 +30,26 @@ class Public::NotesController < ApplicationController
   def index
     # 自分の投稿は除く
     if customer_signed_in?
-      @notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(created_at: :desc).limit(100)
+      @notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(created_at: :desc)
     else
-      @notes = Note.active.where(is_origin: true).order(created_at: :desc).limit(100)
+      @notes = Note.active.where(is_origin: true).order(created_at: :desc)
     end
 
+    # 検査データがあるときに絞り込み
     if params[:search]
-      @notes = @notes.joins(:tags).where("notes.title LIKE :search OR notes.prefecture LIKE :search OR notes.city LIKE :search OR tags.name LIKE :search", search: "%#{params[:search]}%")
+      @search_word = params[:search]
+      @notes = @notes.where("title LIKE :search OR prefecture LIKE :search OR city LIKE :search", search: "%#{@search_word}%")
+    end
+  end
+
+  def my_index
+    # 自分の投稿を取得
+    @notes = Note.active.where(customer_id: current_customer.id).order(created_at: :desc)
+
+    # 検査データがあるときに絞り込み
+    if params[:search]
+      @search_word = params[:search]
+      @notes = @notes.where("title LIKE :search OR prefecture LIKE :search OR city LIKE :search", search: "%#{@search_word}%")
     end
   end
 
