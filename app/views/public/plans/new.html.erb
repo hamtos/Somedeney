@@ -1,0 +1,67 @@
+<h6 class="m-2"><b>計画作成</b></h6>
+<div class="container-fluid mt-3">
+  <div class="row">
+    <!--左サイド-->
+    <div class="col-md-3">
+      <div class="float-right">
+        <h6 class="text-center border py-1" style="width: 210px;"><b>選択済</b></h6>
+        <%= render "/public/plans/list", notes: session_selected_notes %>
+      </div>
+    </div>
+
+    <!--中央-->
+    <div class="col-md-6">
+      <%= render '/public/plans/map' %>
+
+      <!--検索欄-->
+      <div class="border border-dark rounded mt-2 p-2">
+        <div class="row" id='form'>
+          <div class="col-lg-8 col-md-7">
+            <input type="text" class="form-control" id="top_seach" required minlength="2" placeholder="スポットを検索" />
+          </div>
+          <div class="col-lg-4 col-md-5">
+            <input type='button' class='btn btn-success' value="スポット検索" onclick="geocode()">
+          </div>
+        </div>
+        <div class="mt-2">
+          <b>見つかった場所：</b><br>　<b id="seach_address"></b>
+        </div>
+        <% if customer_signed_in? %>
+          <div class="mt-2 ml-3">
+            <!--<button id="note_button" style="display: none;">クイック保存</button>-->
+            <%= form_with model: @note, local: true do |f| %>
+              <%= f.hidden_field :customer_id, :value => current_customer.id  %>
+              <%= f.hidden_field :is_origin, :value => false %>
+              <!--hidden_field_changeによって書き換え-->
+              <%= f.hidden_field :title %>
+              <%= f.hidden_field :prefecture %>
+              <%= f.hidden_field :city %>
+              <%= f.hidden_field :address %>
+              <%= f.hidden_field :latitude %>
+              <%= f.hidden_field :longitude %>
+              <!--ここまで-->
+              <%= f.submit "クイック保存", class: "btn btn-info", id: "note_button", style: "display: none;" %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+    </div>
+    <!--右サイド-->
+    <div class="col-md-3">
+      <h6 class="text-center border py-1" style="width: 210px;"><b>投稿一覧</b></h6>
+      <%= render "/public/plans/list", notes: @all_notes %>
+    </div>
+  </div>
+</div>
+
+<script>
+  // スポット検索欄でEnterキーによるsubmitを無効化
+  document.getElementById("top_seach").onkeypress = (e) => {
+    const key = e.keyCode || e.charCode || 0; // フォームに入力されたキーを取得
+    if (key == 13) { // 13はEnterキーのキーコード
+      e.preventDefault(); // submitを行わない
+      geocode() //代わりにマップ検索を行う
+    }
+  }
+</script>

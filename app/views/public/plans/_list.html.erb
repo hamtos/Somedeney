@@ -1,0 +1,11 @@
+<% if notes.nil? || notes.records.empty? %>
+  <div class="d-flex justify-content-center align-items-center border p-1" style="width: 210px;height: 60px">投稿はありません</div>
+<% else %>
+  <div class="scroll-container card-container border" style: "width: 190px;">
+    <% notes.each do |note| %>
+      <div class="border-bottom">
+        <%= render '/public/notes/card', note: note %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

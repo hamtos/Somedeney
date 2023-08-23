@@ -1,31 +1,7 @@
 <div class="container mt-5">
-  <h1>タグ用seedデータ作成</h1>
-  <input type='number' id='input_note_count' placeholder='noteのレコード数' size="90">
-  <input type='button' value="実行" onclick="make_seed()">
-  <br>
-  <div id="debug"></div>
-  <br>
-  <textarea cols="100" id="result" name="page[content]" rows="20"></textarea>
+  <%= link_to '新規計画', new_plan_path %>
 </div>
 
 <script>
-  function make_seed(){
-    var note_count = document.getElementById('input_note_count').value
-    for (let i = 0; i < note_count; i++) {
-      var random_tag_count = generateRandomNumberInRange(1, 10);
-      const uniqueNumbers = [];
-      for (let j = 0; j < random_tag_count; j++) {
-        var random_tag_id = generateRandomNumberInRange(1, 76);
-        if (!uniqueNumbers.includes(random_tag_id)) { //タグIDが重複したレコードは保存しない
-          uniqueNumbers.push(random_tag_id);
-          document.getElementById('result').value += `[${random_tag_id},${i}],\n`
-        }
-      }
-    }
-  }
 
-  // ランダムな整数を生成
-  function generateRandomNumberInRange(min, max) {
-    return Math.floor(Math.random() * (max - min + 1)) + min;
-  }
 </script>

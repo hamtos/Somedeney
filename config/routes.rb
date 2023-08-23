@@ -23,8 +23,9 @@ Rails.application.routes.draw do
     post 'notes/copy' => 'notes#copy_record'
     resources :notes, only: [:index, :new, :create, :show, :edit, :update]
     resources :tags, only: [:index, :new, :create]
-    resources :plans, only: [:index, :new, :create, :show, :edit, :update]
+    get 'plans/add_note' =>'plans#add_note'
     post '/plans/confirm' => 'plans#confirm'
+    resources :plans, only: [:index, :new, :create, :show, :edit, :update]
   end
 
   namespace :admin do

@@ -1,0 +1,136 @@
+  <!--マップ表示-->
+  <div class="map">
+    <div id="map">
+    </div>
+  </div>
+
+   <div class="test"></div>
+
+  <style>
+  #map {
+    height: 500px;
+    width: 100%;
+  }
+  </style>
+
+  <script>
+  let map
+  let geocoder
+  let marker = [];
+  let uluru
+  let uluru_marker
+  let infowindow = [];
+  let before_marker_num = -1
+
+  function initMap() {
+    geocoder = new google.maps.Geocoder()
+    // 数値が入っていないとマップが非表示になってしまうためnilの場合は0を入れる
+    // contollerにて既存に登録している緯度と経度を変数に入れて渡す
+    uluru = {lat: <%= @lat || 35.625166 %>, lng: <%= @lng || 139.243611 %>};
+    map = new google.maps.Map(document.getElementById('map'), {
+      zoom: 10,
+      center: uluru,
+      streetViewControl: false, //ストリートビューに切り替えるボタンを非表示
+      mapTypeControl: false, //地図と航空写真を切り替えるボタンを非表示
+      scrollwheel: true, //マウスホイールによるzoomを許可
+    });
+
+    var marker_lats = <%= @marker_lats %>
+    var marker_lngs = <%= @marker_lngs %>
+    var marker_titles = '<%== JSON.dump(@marker_titles) %>'.replace(/\[/g, "").replace(/\]/g, "").split(',');
+    for (var i = 0; i < marker_lats.length; i++) {
+      uluru_marker = {lat: marker_lats[i], lng: marker_lngs[i]}
+
+      // マーカー設置
+      marker[i] = new google.maps.Marker({
+        position: uluru_marker,
+        map: map,
+        draggable: false   // ドラッグ可否
+      });
+
+      // マーカーにウィンドウ情報付与
+      infowindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
+        content: marker_titles[i] // 吹き出しに表示する内容
+      });
+
+      // マーカーにクリックイベントを追加
+      markerEvent(i);
+    }
+  }
+  // マーカーにクリックイベントを追加
+  function markerEvent(i) {
+    google.maps.event.addListener( marker[i], 'click', function(ev) { // マーカーをクリックしたとき
+      // 吹き出しの表示
+      if(before_marker_num !== -1){
+        infowindow[before_marker_num].close()
+      }
+      infowindow[i].open(map, marker[i]);
+      before_marker_num = i
+    });
+  }
+
+  //入力文字から住所検索
+  function geocode() {
+    geocoder.geocode(
+    {
+      'address': document.getElementById('top_seach').value,
+      'region': 'jp'
+    },
+    function(results, status){
+      if(status==google.maps.GeocoderStatus.OK){
+        document.getElementById('seach_address').innerHTML = results[0].formatted_address
+        const quickNoteButton = document.getElementById("note_button"); //クイック投稿ボタンを取得
+        quickNoteButton.style.display = "block"; //ボタンを表示
+      	var lat = results[0].geometry.location.lat(); //検索緯度
+      	var lng = results[0].geometry.location.lng(); //検索経度
+      	map.setCenter(results[0].geometry.location); //地図を遷移
+        move_marker(lat, lng) //マーカーを移動
+        hidden_field_change(results)
+      } else {
+        alert('スポットが見つかりませんでした')
+      }
+    });
+  }
+
+  // マーカー移動
+  function move_marker(latitude, longitude) {
+    uluru = {lat: latitude, lng: longitude};
+    var seach_marker = new google.maps.Marker({
+      position: uluru,
+      map: map,
+      draggable: false   // true=>ドラッグ可能
+    });
+    var serch_infowindow = new google.maps.InfoWindow({ // 吹き出しの追加
+        content: document.getElementById('top_seach').value // 吹き出しに表示する内容
+    });
+    serch_infowindow.open(map, seach_marker);
+  }
+
+  //ジオコード結果に基づいてhiddenフォーム変更
+  function hidden_field_change(geoCodeResults){
+    document.getElementById("note_title").value = document.getElementById('top_seach').value
+    document.getElementById("note_prefecture").value = getLocalName(geoCodeResults,1)
+    document.getElementById("note_city").value = getLocalName(geoCodeResults,2)
+    document.getElementById("note_address").value = geoCodeResults[0].formatted_address
+    document.getElementById("note_latitude").value = geoCodeResults[0].geometry.location.lat()
+    document.getElementById("note_longitude").value = geoCodeResults[0].geometry.location.lng()
+    // document.getElementById("test").innerHTML = getLocalName(geoCodeResults,1) + " " + getLocalName(geoCodeResults,2) + " " + geoCodeResults[0].formatted_address + " " + geoCodeResults[0].geometry.location.lat() + " " + geoCodeResults[0].geometry.location.lng()
+  }
+
+  // ジオコード結果から国・県・市名を取得、type_code:0=>国、1=>県、2=>市
+  function getLocalName(geoCodeResults, type_code){
+    var type_array = ['country', 'administrative_area_level_1', 'locality'];
+    // ジオコーディング結果を用いた処理
+    var geoCnt = geoCodeResults[0].address_components.length;
+    var prefName = "";
+    for (var i = 0; i < geoCnt; i++) {
+        if (geoCodeResults[0].address_components[i].types[0] === type_array[type_code]) {
+            prefName = geoCodeResults[0].address_components[i].long_name;
+            return prefName;
+        }
+    }
+    return prefName;
+  }
+
+  </script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>
