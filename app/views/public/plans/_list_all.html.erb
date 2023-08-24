@@ -4,7 +4,12 @@
   <div class="scroll-container card-container border" style: "width: 190px;">
     <% notes.each do |note| %>
       <div class="border-bottom">
-        <%= render '/public/notes/card', note: note %>
+        <!--選択済カードに色を付ける-->
+        <% if session[:selected_notes_id]&.include?(note.id) %>
+          <div class="highlighted-note"><%= render '/public/plans/card_selected', note: note %></div>
+        <% else %>
+          <%= render '/public/plans/card', note: note %>
+        <% end %>
       </div>
     <% end %>
   </div>

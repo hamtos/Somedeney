@@ -15,19 +15,32 @@ class Public::PlansController < ApplicationController
     @all_notes = Note.active.where(is_origin: true).order(created_at: :desc).limit(100)
 
     # 全体の投稿（左サイド）
-    @selected_notes = []
+    note_ids = session[:selected_notes_id] || []
+    @selected_notes = Note.where(id: note_ids)
 
     # 検索欄はlink_to
   end
 
   def add_note
-    note_to_add = Note.find(params[:id])
-    @selected_notes << note_to_add
-
-    session[:selected_notes] ||= [] # セッションが初めて設定される場合に初期化
-    session[:selected_notes] << note_to_add
+    session[:selected_notes_id] ||= [] # セッションが初めて設定される場合に初期化
+    session[:selected_notes_id] << params[:id].to_i
 
     redirect_to new_plan_path
+  end
+
+  def remove_note
+    session[:selected_notes_id] ||= [] # セッションが初めて設定される場合に初期化
+    session[:selected_notes_id].delete(params[:id].to_i)
+
+    redirect_to new_plan_path
+  end
+
+  def reset_note
+    session[:selected_notes_id].clear
+    redirect_to new_plan_path
+  end
+
+  def confirm
   end
 
   def index

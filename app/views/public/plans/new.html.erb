@@ -4,8 +4,11 @@
     <!--左サイド-->
     <div class="col-md-3">
       <div class="float-right">
-        <h6 class="text-center border py-1" style="width: 210px;"><b>選択済</b></h6>
-        <%= render "/public/plans/list", notes: session_selected_notes %>
+        <h6 class="text-center border py-1" style="width: 210px;">
+          <b>選択済</b>
+          <%= link_to 'リセット', plans_reset_note_path, class: "btn-sm btn-success" %>
+        </h6>
+        <%= render "/public/plans/list_selected", notes: @selected_notes %>
       </div>
     </div>
 
@@ -50,7 +53,7 @@
     <!--右サイド-->
     <div class="col-md-3">
       <h6 class="text-center border py-1" style="width: 210px;"><b>投稿一覧</b></h6>
-      <%= render "/public/plans/list", notes: @all_notes %>
+      <%= render "/public/plans/list_all", notes: @all_notes %>
     </div>
   </div>
 </div>
