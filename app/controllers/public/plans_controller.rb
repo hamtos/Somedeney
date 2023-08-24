@@ -81,4 +81,8 @@ class Public::PlansController < ApplicationController
 
   def index
   end
+
+  def plan_params
+    params.require(:plan).permit(:customer_id, :name, :is_complete)
+  end
 end

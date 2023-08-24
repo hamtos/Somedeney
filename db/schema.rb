@@ -117,6 +117,7 @@ ActiveRecord::Schema.define(version: 2023_08_19_054310) do
 
   create_table "plans", force: :cascade do |t|
     t.integer "customer_id", null: false
+    t.string "name", default: "計画", null: false
     t.boolean "is_complete", default: false, null: false
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false

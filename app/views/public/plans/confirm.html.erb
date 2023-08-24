@@ -1,44 +1,46 @@
 <div class="container mt-3">
-  <div class="row">
+  <h6><b><%= link_to "スポット選択", new_plan_path %> > <u>日程の入力</u> > 作成完了</b></h6>
+  <div class="row mt-4">
     <div class="col-md-8">
-        <%= form_with model: @plan, local: true do |f| %>
-          <div class="col-md-6">
-            <%= f.text_field :name, placeholder: "計画名を入力", class: "form-control" %>
-          </div>
-          <div class="mt-2">
-            <% @notes.each do |note| %>
-              <div class="">
-                <table>
-                  <tbody>
-                    <tr style="height: 100px">
-                      <td class="">
-                        <div class="mb-2 mr-1">
-                          出発：<%= f.datetime_field :departure, value: 1.day.from_now.beginning_of_day.strftime('%Y-%m-%dT%T') %>
+      <%= form_with model: @plan, local: true do |f| %>
+        <div class="col-md-6">
+          <%= f.text_field :name, placeholder: "計画名を入力", class: "form-control" %>
+        </div>
+        <div class="mt-3">
+          <% @notes.each do |note| %>
+            <div class="d-flex justify-content-center">
+              <table>
+                <tbody>
+                  <tr style="height: 100px">
+                    <td class="">
+                      <div class="mb-2 mr-1">
+                        出発：<%= f.datetime_field "note_#{note.id}_departure", value: 1.day.from_now.beginning_of_day.strftime('%Y-%m-%dT%T') %>
+                      </div>
+                      <div class="">
+                        到着：<%= f.datetime_field "note_#{note.id}_arrival", value: 1.day.from_now.beginning_of_day.strftime('%Y-%m-%dT%T') %>
+                      </div>
+                    </td>
+                    <td class="card-ajax">
+                      <%= render '/public/plans/card_confirm', note: note %>
+                    </td>
+                    <td>
+                      <%= link_to plans_up_note_path(id: note.id), rocal: true do %>
+                        <div class="border rounded p-1 ml-1 mb-1">
+                          <i class="fa-solid fa-caret-up"></i>
                         </div>
-                        <div class="">
-                          到着：<%= f.datetime_field :arrival, value: 1.day.from_now.beginning_of_day.strftime('%Y-%m-%dT%T') %>
+                      <% end %>
+                      <%= link_to plans_down_note_path(id: note.id), rocal: true do %>
+                        <div class="border rounded p-1 ml-1">
+                          <i class="fa-solid fa-caret-down"></i>
                         </div>
-                      </td>
-                      <td class="card-ajax">
-                        <%= render '/public/plans/card_confirm', note: note %>
-                      </td>
-                      <td>
-                        <%= link_to plans_up_note_path(id: note.id), rocal: true do %>
-                          <div class="border rounded p-1 ml-1 mb-1">
-                            <i class="fa-solid fa-caret-up"></i>
-                          </div>
-                        <% end %>
-                        <%= link_to plans_down_note_path(id: note.id), rocal: true do %>
-                          <div class="border rounded p-1 ml-1">
-                            <i class="fa-solid fa-caret-down"></i>
-                          </div>
-                        <% end %>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
+                      <% end %>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           <% end %>
+          <%= f.hidden_field :customer_id, value: current_customer.id %>
           <div class="text-center">
             <%= f.submit '計画を作成', class: "btn-lg btn-success mt-5" %>
           </div>
