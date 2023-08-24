@@ -48,8 +48,35 @@ class Public::PlansController < ApplicationController
       redirect_to new_plan_path
     end
 
+    @plan = Plan.new
+
     note_ids = session[:selected_notes_id] || []
-    @notes = Note.where(id: note_ids)
+    @notes = Note.where(id: note_ids).sort_by { |id| note_ids.index(id[:id]) }
+  end
+
+  def up_note
+    array = session[:selected_notes_id] || []
+    id_to_move = params[:id].to_i
+    index = array.index(id_to_move)
+    if  index > 0
+      array[index], array[index - 1] = array[index - 1], array[index]
+      session[:selected_notes_id] = array
+    end
+    redirect_to plans_confirm_path
+  end
+
+  def down_note
+    array = session[:selected_notes_id] || []
+    id_to_move = params[:id].to_i
+    index = array.index(id_to_move)
+    if  index < (array.length - 1)
+      array[index], array[index + 1] = array[index + 1], array[index]
+      session[:selected_notes_id] = array
+    end
+    redirect_to plans_confirm_path
+  end
+
+  def create
   end
 
   def index
