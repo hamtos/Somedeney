@@ -1,7 +1,7 @@
 <% if notes.nil? || notes.records.empty? %>
-  <div class="d-flex justify-content-center align-items-center border p-1" style="width: 210px;height: 60px">投稿はありません</div>
+  <div class="d-flex justify-content-center align-items-center border p-1" style="width: 210px;height: 60px">スポットは未選択です</div>
 <% else %>
-  <div class="scroll-container card-container border" style: "width: 190px;">
+  <div class="scroll-container-selected card-container border" style: "width: 190px;">
     <% notes.each do |note| %>
       <div class="border-bottom">
         <div class="highlighted-note"><%= render '/public/plans/card_selected', note: note %></div>

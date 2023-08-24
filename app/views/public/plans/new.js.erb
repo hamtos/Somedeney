@@ -1,0 +1,2 @@
+$('.all_notes_ajax').html('<%= j(render '/public/plans/list_all', notes: @all_notes) %>');
+$('.selected_notes_ajax').html('<%= j(render '/public/plans/list_selected', notes: @selected_notes) %>');

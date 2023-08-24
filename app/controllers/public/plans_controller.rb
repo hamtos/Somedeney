@@ -14,6 +14,7 @@ class Public::PlansController < ApplicationController
     # 全体の投稿（右サイド）
     @all_notes = Note.active.where(is_origin: true).order(created_at: :desc).limit(100)
 
+
     # 全体の投稿（左サイド）
     note_ids = session[:selected_notes_id] || []
     @selected_notes = Note.where(id: note_ids)
@@ -41,6 +42,14 @@ class Public::PlansController < ApplicationController
   end
 
   def confirm
+    # 画面遷移時のエラー処理
+    if session[:selected_notes_id] == []
+      flash[:error] = "スポット一つ以上選択してください"
+      redirect_to new_plan_path
+    end
+
+    note_ids = session[:selected_notes_id] || []
+    @notes = Note.where(id: note_ids)
   end
 
   def index

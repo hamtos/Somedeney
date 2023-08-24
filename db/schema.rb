@@ -79,6 +79,7 @@ ActiveRecord::Schema.define(version: 2023_08_19_054310) do
   create_table "note_plans", force: :cascade do |t|
     t.integer "plan_id", null: false
     t.integer "note_id", null: false
+    t.integer "order", null: false
     t.time "arrival"
     t.time "departure"
     t.datetime "created_at", precision: 6, null: false

@@ -26,7 +26,7 @@ Rails.application.routes.draw do
     get 'plans/add_note' =>'plans#add_note'
     get 'plans/remove_note' =>'plans#remove_note'
     get 'plans/reset_note' =>'plans#reset_note'
-    post '/plans/confirm' => 'plans#confirm'
+    get 'plans/confirm' => 'plans#confirm'
     resources :plans, only: [:index, :new, :create, :show, :edit, :update]
   end
 

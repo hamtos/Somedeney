@@ -3,6 +3,7 @@ class CreateNotePlans < ActiveRecord::Migration[6.1]
     create_table :note_plans do |t|
       t.references :plan, null: false, foreign_key: true
       t.references :note, null: false, foreign_key: true
+      t.integer :order, null:false
       t.time :arrival, null: true
       t.time :departure, null: true
       t.timestamps
