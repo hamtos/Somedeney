@@ -77,6 +77,25 @@ class Public::PlansController < ApplicationController
   end
 
   def create
+    note_ids = session[:selected_notes_id]
+
+    Plan.transaction do
+      plan = Plan.new(plan_params)
+      if plan.save
+        note_ids.each_with_index do |note_id, index|
+          order = index + 1
+          departure = params[:plan]["note_#{note_id}_departure"]
+          arrival = params[:plan]["note_#{note_id}_arrival"]
+          binding.pry
+          plan.note_plans.create!(note_id: note_id, order: order, departure: departure, arrival: arrival)
+        end
+        session[:selected_notes_id] = []
+        redirect_to plan_path(plan)
+      else
+        flash[:error] = '保存できませんでした'
+        render "confirm"
+      end
+    end
   end
 
   def index

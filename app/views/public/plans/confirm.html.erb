@@ -1,9 +1,9 @@
+<h6 class="m-3"><b><%= link_to "スポット選択", new_plan_path %> > <u>日程の入力</u> > 作成完了</b></h6>
 <div class="container mt-3">
-  <h6><b><%= link_to "スポット選択", new_plan_path %> > <u>日程の入力</u> > 作成完了</b></h6>
   <div class="row mt-4">
     <div class="col-md-8">
       <%= form_with model: @plan, local: true do |f| %>
-        <div class="col-md-6">
+        <div class="col-md-7">
           <%= f.text_field :name, placeholder: "計画名を入力", class: "form-control" %>
         </div>
         <div class="mt-3">

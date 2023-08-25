@@ -80,8 +80,8 @@ ActiveRecord::Schema.define(version: 2023_08_19_054310) do
     t.integer "plan_id", null: false
     t.integer "note_id", null: false
     t.integer "order", null: false
-    t.time "arrival"
-    t.time "departure"
+    t.datetime "arrival"
+    t.datetime "departure"
     t.datetime "created_at", precision: 6, null: false
     t.datetime "updated_at", precision: 6, null: false
     t.index ["note_id"], name: "index_note_plans_on_note_id"
