@@ -6,6 +6,7 @@ class CreateNotePlans < ActiveRecord::Migration[6.1]
       t.integer :order, null:false
       t.datetime :arrival, null: true
       t.datetime :departure, null: true
+      t.string :comment, null: true
       t.timestamps
     end
   end

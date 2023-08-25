@@ -1,0 +1,10 @@
+<%= link_to plans_up_note_path(id: note.id), remote: true, tabindex: -1 do %>
+  <div class="border rounded p-1 ml-1 mb-1">
+    <i class="fa-solid fa-caret-up"></i>
+  </div>
+<% end %>
+<%= link_to plans_down_note_path(id: note.id), remote: true, tabindex: -1 do %>
+  <div class="border rounded p-1 ml-1">
+    <i class="fa-solid fa-caret-down"></i>
+  </div>
+<% end %>

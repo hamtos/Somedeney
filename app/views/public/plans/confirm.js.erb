@@ -1,1 +1,4 @@
-$('.card-ajax').html('<%= j(render '/public/plans/card_confirm', note: note) %>');
+<% @notes.each_with_index do |note, index| %>
+  $('#card-ajax-<%= index %>').html('<%= j(render '/public/plans/card_confirm', note: note) %>');
+  $('#up_down-ajax-<%= index %>').html('<%= j(render '/public/plans/up_down_confirm', note: note) %>');
+<% end %>
