@@ -86,16 +86,20 @@ class Public::PlansController < ApplicationController
           order = index + 1
           departure = params[:plan]["note_#{note_id}_departure"]
           arrival = params[:plan]["note_#{note_id}_arrival"]
-          binding.pry
           plan.note_plans.create!(note_id: note_id, order: order, departure: departure, arrival: arrival)
         end
         session[:selected_notes_id] = []
+        flash[:notece] = '新しい計画を作成しました'
         redirect_to plan_path(plan)
       else
         flash[:error] = '保存できませんでした'
         render "confirm"
       end
     end
+  end
+
+  def show
+    @plan = Plan.find(params[:id])
   end
 
   def index

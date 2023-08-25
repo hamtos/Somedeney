@@ -14,10 +14,10 @@
                   <tr style="height: 100px">
                     <td class="">
                       <div class="mb-2 mr-1">
-                        出発：<%= f.datetime_field "note_#{note.id}_departure", value: 1.day.from_now.beginning_of_day.strftime('%Y-%m-%dT%T') %>
+                        到着：<%= f.datetime_field "note_#{note.id}_arrival", value: 1.day.from_now.beginning_of_day.strftime('%Y-%m-%dT%T') %>
                       </div>
                       <div class="">
-                        到着：<%= f.datetime_field "note_#{note.id}_arrival", value: 1.day.from_now.beginning_of_day.strftime('%Y-%m-%dT%T') %>
+                        出発：<%= f.datetime_field "note_#{note.id}_departure", value: 1.day.from_now.beginning_of_day.strftime('%Y-%m-%dT%T') %>
                       </div>
                     </td>
                     <td class="card-ajax">

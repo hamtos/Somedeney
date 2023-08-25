@@ -4,8 +4,8 @@ class CreateNotePlans < ActiveRecord::Migration[6.1]
       t.references :plan, null: false, foreign_key: true
       t.references :note, null: false, foreign_key: true
       t.integer :order, null:false
-      t.time :arrival, null: true
-      t.time :departure, null: true
+      t.datetime :arrival, null: true
+      t.datetime :departure, null: true
       t.timestamps
     end
   end

@@ -1,1 +1,22 @@
-保存
+<%= link_to "計画一覧に戻る", plans_path, class: "btn btn-success" %>
+<div class="container mt-3">
+  <div>計画名：<%= @plan.name %></div>
+  <table border="1" class="mt-2">
+    <thead class="text-center">
+      <tr>
+        <th>日付</th>
+        <th>時間</th>
+        <th>スケジュール</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @plan.note_plans.each do |note_plan| %>
+        <tr>
+          <td class="text-center px-3"><%= note_plan.departure.strftime('%-m/%-d') %></td>
+          <td class="text-center px-3"><%= note_plan.arrival.strftime('%H:%M') %>～<%= note_plan.departure.strftime('%H:%M') %></td>
+          <td class="px-3"><%= note_plan.note.title %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
