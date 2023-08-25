@@ -17,7 +17,7 @@ class Public::PlansController < ApplicationController
 
     # 全体の投稿（左サイド）
     note_ids = session[:selected_notes_id] || []
-    @selected_notes = Note.where(id: note_ids)
+    @selected_notes = Note.where(id: note_ids).sort_by { |id| -note_ids.index(id[:id]) }
 
     # 検索欄はlink_to
   end
