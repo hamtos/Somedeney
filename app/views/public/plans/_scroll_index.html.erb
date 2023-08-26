@@ -1,0 +1,43 @@
+<% if plans.nil? || plans.empty? %>
+  <div class="scroll-plan-index scroll-plan-index_null">計画はありません</div>
+<% else %>
+  <div class="scroll-container scroll-plan-index">
+    <% plans.each do |plan| %>
+      <%= link_to plan_path(plan), style: "color: black;" do %>
+        <div class="border mt-2 d-flex plan-card">
+          <!--左側-->
+          <div class="border-right plan-name-container">
+            <div class="mt-1 ml-1"><b><%= plan.name %></b></div>
+            <div class="">
+              <% plan.notes.pluck(:prefecture).uniq.each do |prefecture| %>
+                <span class="ml-2"># <%= prefecture %></span>
+              <% end %>
+            </div>
+            <div class="text-right mt-2">
+              <% if plan.is_complete %>
+                <span class="text-success mb-2 mr-2">実施済</span>
+              <% else %>
+                <span class="text-danger mr-2">実施前</span>
+              <% end %>
+            </div>
+          </div>
+          <!--右側-->
+          <div class="p-1 d-flex">
+            <% plan.notes.each_with_index do |note, index| %>
+              <div class="d-flex card-color">
+                <%= render '/public/plans/card_confirm', note: note %>
+              </div>
+              <% if (plan.notes.count - 1) > index %>
+                <div class="mx-1 d-flex justify-content-center align-items-center"><i class="fa-solid fa-caret-right"></i></div>
+              <% end %>
+              <% if index == 3 %>
+                <div class="mt-auto px-1">...</div>
+                <% break %>
+              <% end %>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+<% end %>
