@@ -104,6 +104,31 @@ class Public::PlansController < ApplicationController
 
   def index
     @plans = Plan.where(customer_id: current_customer.id)
+
+    # 検索データがあるときに絞り込み
+    if params[:search]
+      search_word = params[:search]
+      @plans = @plans.joins(:notes).where(
+        "plans.name LIKE ? OR notes.title LIKE ? OR notes.prefecture LIKE ?",
+        "%#{search_word}%",
+        "%#{search_word}%",
+        "%#{search_word}%"
+      ).distinct
+    end
+  end
+
+  def update
+    plan = Plan.find(params[:id])
+    if plan.update(plan_params)
+      redirect_to plan_path(plan)
+    end
+  end
+
+  def destroy
+    plan = Plan.find(params[:id])
+    plan.destroy
+    flash[:notice] = "計画を削除しました"
+    redirect_to plans_path
   end
 
   def plan_params

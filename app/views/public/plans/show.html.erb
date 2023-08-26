@@ -1,6 +1,34 @@
-<%= link_to "計画一覧に戻る", plans_path, class: "btn btn-success" %>
+
 <div class="container mt-3">
-  <div class="m-2">計画名：<%= @plan.name %></div>
+
+  <div class="d-flex justify-content-end" style="max-width: 500px">
+    <div class="row">
+    <!--計画実行済ボタン-->
+    <% if @plan.is_complete %>
+      <%= form_with model: @plan, method: :patch do |f| %>
+        <%= f.hidden_field :is_complete, :value => false %>
+        <%= f.submit "実施済",class: "btn btn-outline-success", data: { confirm: "実施前に戻しますか？"} %>
+      <% end %>
+    <% else %>
+      <%= form_with model: @plan, method: :patch do |f| %>
+        <%= f.hidden_field :is_complete, :value => true %>
+        <%= f.submit "実施前",class: "btn btn-outline-danger", data: { confirm: "実施済にしますか？"} %>
+      <% end %>
+    <% end %>
+
+    <!--plan-indexへのリンク-->
+    <%= link_to "計画一覧に戻る", plans_path, class: "btn btn-success ml-2" %>
+
+    <!--投稿削除機能-->
+    <%= link_to plan_path(@plan), method: :delete, data: { toggle: "tooltip", disable_with: '送信中', confirm: "この計画を削除しますか？"},
+                                         title: "計画の削除", class: "ml-2 py-1" do %>
+      <i class="fa-solid fa-trash fa-xl"></i>
+    <% end %>
+    </div>
+  </div>
+
+  <!--計画詳細-->
+  <div class="mt-4">計画名：<%= @plan.name %></div>
     <table border="1" class="mt-2">
       <thead class="text-center">
         <tr>
