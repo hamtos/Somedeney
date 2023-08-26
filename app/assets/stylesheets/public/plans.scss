@@ -3,29 +3,31 @@
   background-color: #fffacd;
 }
 
-// block要素のスクロール
-.scroll-container-selected {
+// confirmページ
+.scroll-plan-confirm-selected {
   max-height: 500px;
-  width: 210px;
-  overflow-y: auto;
-}
-/* スクロールバー全体のスタイル */
-.scroll-container-selected::-webkit-scrollbar {
-  width: 7px; /* スクロールバーの幅 */
 }
 
-/* スクロールバーのトラック部分のスタイル */
-.scroll-container-selected::-webkit-scrollbar-track {
-  background-color: #f1f1f1; /* トラック部分の背景色 */
+// indexページ
+.scroll-plan-index {
+  width: 1100px;
 }
 
-/* スクロールバーのハンドル部分（つまみ）のスタイル */
-.scroll-container-selected::-webkit-scrollbar-thumb {
-  background-color: #888; /* ハンドル部分の背景色 */
-  border-radius: 5px; /* ハンドル部分の角丸 */
+.card-color {
+  background-color: #FBFFDC;
 }
 
-/* スクロールバーのハンドル部分がホバーしたときのスタイル */
-.scroll-container-selected::-webkit-scrollbar-thumb:hover {
-  background-color: #555;
+.plan-name-container{
+    width: 240px;
+    overflow: hidden;
+    white-space: nowrap;
+  }
+
+.plan-card {
+  background-color: #D0F5BE;
+}
+
+.plan-card:hover {
+  background-color: #98EECC;
+  transition: background-color 0.5s; /* 背景色の変化を～秒かけてアニメーションする */
 }

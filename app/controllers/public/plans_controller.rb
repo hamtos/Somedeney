@@ -14,7 +14,6 @@ class Public::PlansController < ApplicationController
     # 全体の投稿（右サイド）
     @all_notes = Note.active.where(is_origin: true).order(created_at: :desc).limit(100)
 
-
     # 全体の投稿（左サイド）
     note_ids = session[:selected_notes_id] || []
     @selected_notes = Note.where(id: note_ids).sort_by { |id| -note_ids.index(id[:id]) }
@@ -104,6 +103,7 @@ class Public::PlansController < ApplicationController
   end
 
   def index
+    @plans = Plan.where(customer_id: current_customer.id)
   end
 
   def plan_params
