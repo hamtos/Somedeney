@@ -1,0 +1,46 @@
+  <input id="inputField" type="text" placeholder="入力してください">
+  <div id="suggestions"></div>
+  <form id="form">
+    <input id="selectedItem" type="hidden" name="selectedItem">
+    <!--<button type="submit">Submit</button>-->
+  </form>
+
+  <script>
+    // サーバーから取得したJSON形式のリスト
+    const tagList = <%= raw tags.map { |note| { name: note.name, id: note.id } }.to_json %>
+
+    const inputField = document.getElementById('inputField');
+    const suggestionsDiv = document.getElementById('suggestions');
+    const form = document.getElementById('form');
+    const selectedItemInput = document.getElementById('selectedItem');
+
+    // フォームが送信されたときの処理
+    form.addEventListener('submit', function(event) {
+      event.preventDefault();
+      const selectedItemValue = selectedItemInput.value;
+      console.log('Selected item:', selectedItemValue);
+      // ここで選択された項目の処理を行う（例：フォームの送信など）
+    });
+
+    // フォーム入力が変更されたときの処理
+    inputField.addEventListener('input', function() {
+      const inputText = inputField.value.trim().toLowerCase();
+      const filteredTags = tagList.filter(item => item.name.toLowerCase().includes(inputText));
+
+      // 候補リストをクリア
+      suggestionsDiv.innerHTML = '';
+
+      // 候補リストを表示
+      filteredTags.forEach(item => {
+        const suggestionItem = document.createElement('div');
+        suggestionItem.className = 'suggestion';
+        suggestionItem.textContent = item.name;
+        suggestionItem.addEventListener('click', function() {
+          inputField.value = item.name;
+          selectedItemInput.value = item.name;
+          suggestionsDiv.innerHTML = '';
+        });
+        suggestionsDiv.appendChild(suggestionItem);
+      });
+    });
+  </script>

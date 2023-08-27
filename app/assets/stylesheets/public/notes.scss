@@ -1,3 +1,4 @@
+// ----topページ、note_new----
 .container-note-index {
   display: flex;
   flex-direction: column;
@@ -34,7 +35,37 @@
   background-color: #555;
 }
 
-// 投稿要素にマウスオンした時に、色を変える
+.button-note_new-tag {
+  margin: 5px;
+  padding: 5px;
+  background-color: #98EECC;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.suggestions-container {
+  position: absolute;
+  top: 100%;
+  left: 15px;
+  width: 100%;
+  max-height: 600px;
+  overflow-y: auto;
+  z-index: 1000; /* 他の要素より手前に表示するための z-index 値 */
+  background-color: white; /* 必要に応じて背景色を設定 */
+  outline: 1px solid #000000; /* 必要に応じてボーダーを設定 */
+  outline-offset: -1px;
+}
+
+.suggestions-container:empty {
+  border: none;
+}
+
+.suggestion-tag:hover {
+  background-color: #D0F5BE;
+}
+
+// ----index----
 .card {
   background-color: #D0F5BE;
 }

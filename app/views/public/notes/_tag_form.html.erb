@@ -1,0 +1,81 @@
+<div id="output"></div>
+<input type="text" id="inputText" placeholder="タグの入力">
+<button id="addButton">タグの追加</button>
+<div class="suggestions-container">
+  <div id="suggestions"></div>
+</div>
+<form id="form">
+  <input id="selectedItem" type="hidden" name="selectedItem">
+</form>
+
+<script>
+  const tagList = <%= raw tags&.map { |tag| { name: tag.name, id: tag.id, count: tag.note_tags.count } }.to_json %>
+
+  const addButton = document.getElementById('addButton');
+  const outputDiv = document.getElementById('output');
+  const inputField = document.getElementById('inputText');
+  const suggestionsDiv = document.getElementById('suggestions');
+  const form = document.getElementById('form');
+  const selectedItemInput = document.getElementById('selectedItem');
+
+  // ボタンが押されたとき
+  addButton.addEventListener('click', () => {
+    const inputText = inputField.value;
+    if (inputText.trim() !== '') {
+      set_tag_button(inputText, outputDiv, inputField);
+    }
+  });
+
+  // フォームに入力されたとき
+  inputText.addEventListener('input', function() {
+    const inputText = inputField.value.trim().toLowerCase();
+    const filteredTags = tagList.filter(item => item.name.toLowerCase().includes(inputText));
+
+    // 候補リストをクリア
+    suggestionsDiv.innerHTML = '';
+
+    // 候補リストを表示
+    filteredTags.forEach(item => {
+      const suggestionItem = document.createElement('div');
+      suggestionItem.className = 'suggestion-tag';
+      suggestionItem.textContent = "　" + item.name + "　" + item.count + "件" ;
+      suggestionItem.addEventListener('click', function() {
+        const inputText = item.name;
+        set_tag_button(inputText, outputDiv, inputField);
+        selectedItemInput.value = item.name;
+      });
+      suggestionsDiv.appendChild(suggestionItem);
+    });
+  });
+
+  // 選択されたタグを表示・記録する
+  function set_tag_button(inputText, outputDiv, inputField){
+    const newButton = document.createElement('button');
+    newButton.className = 'button-note_new-tag';
+    newButton.textContent = inputText + " ×";
+    newButton.addEventListener('click', () => {
+      outputDiv.removeChild(newButton);
+    });
+    outputDiv.appendChild(newButton);
+    inputField.value = '';
+    suggestionsDiv.innerHTML = '';
+  }
+
+  // Enterキーによるsubmitを無効化
+  document.getElementById("inputText").onkeypress = (e) => {
+    const key = e.keyCode || e.charCode || 0; // フォームに入力されたキーを取得
+    if (key == 13) { // 13はEnterキーのキーコード
+      e.preventDefault(); // submitを行わない
+      const inputText = inputField.value; //代わりにタグを投稿する
+      if (inputText.trim() !== '') {
+        // set_tag_button(inputText, outputDiv, inputField);
+        all_nothing()
+      }
+    }
+  }
+
+  function all_nothing(){
+  }
+
+
+</script>

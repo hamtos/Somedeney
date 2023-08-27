@@ -3,7 +3,8 @@ class Public::NotesController < ApplicationController
     @note = Note.new
     @lat = 35.625166
     @lng = 139.243611
-    @tag_list = Tag.pluck(:name, :id)
+
+    @tags = Tag.all
   end
 
   def create

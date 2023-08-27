@@ -1,5 +1,5 @@
+<h6 class="m-2"><b>新規登録</b></h6>
 <div class="container">
-  <h2>新規登録</h2>
   <div class="row">
 
     <!--左半分（入力フォーム）-->
@@ -11,8 +11,9 @@
 
         <div class="row form-group">
           <div class="col">
-            <%= f.label :tag_id, "タグ設定：" %>
-            <%= f.select :tag_id, @tag_list, class: "form-select" %>
+            <%= f.label :tag_id, "タグ設定" %>
+            <%= render '/public/notes/tag_form', tags: @tags %>
+            <%= f.hidden_field :tags %>
           </div>
         </div>
 
