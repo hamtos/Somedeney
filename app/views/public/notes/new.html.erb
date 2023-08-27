@@ -9,14 +9,16 @@
           <div class="col"><%= f.text_field :title, placeholder: "スポット・名物", class: "form-control", id:"input_name" %></div>
         </div>
 
+        <!--タグ機能-->
         <div class="row form-group">
           <div class="col">
             <%= f.label :tag_id, "タグ設定" %>
-            <%= render '/public/notes/tag_form', tags: @tags %>
+            <%= render 'public/notes/tag_form', tags: @tags %>
             <%= f.hidden_field "selected_tags", id: "selected_tags" %>
           </div>
         </div>
 
+        <!--メモ機能-->
         <div class="row form-group mt-2">
           <div class="col">
             <%= f.text_area :body, placeholder: "メモ（任意）", class: "form-control", size: "100x6" %>
@@ -266,14 +268,6 @@
     map.setZoom(zoom_level)
   }
 
-  // input_nameのテキストフォームが変更されたときのイベント
-  window.addEventListener('DOMContentLoaded', function(){
-    input_name.addEventListener("change",function(){
-      document.getElementById("note_seach").value = document.getElementById("input_name").value;
-      geocode()
-    });
-  });
-
   // スポット検索欄でEnterキーによるsubmitを無効化
   document.getElementById("note_seach").onkeypress = (e) => {
     const key = e.keyCode || e.charCode || 0; // フォームに入力されたキーを取得
@@ -283,6 +277,15 @@
     }
   }
 
+  // 投稿タイトルでのエンターキーによるsubmitを無効化
+  document.getElementById("input_name").onkeypress = (e) => {
+    const key = e.keyCode || e.charCode || 0; // フォームに入力されたキーを取得
+    if (key == 13) { // 13はEnterキーのキーコード
+      e.preventDefault(); // submitを行わない
+      document.getElementById("note_seach").value = document.getElementById("input_name").value;
+      geocode()
+    }
+  }
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>

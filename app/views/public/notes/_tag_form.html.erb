@@ -4,9 +4,6 @@
 <div class="suggestions-container">
   <div id="suggestions"></div>
 </div>
-<form id="form">
-  <input id="selectedItem" type="hidden" name="selectedItem">
-</form>
 
 <script>
   const tagList = <%= raw tags&.map { |tag| { name: tag.name, id: tag.id, count: tag.note_tags.count } }.to_json %>
@@ -15,7 +12,6 @@
   const outputDiv = document.getElementById('output');
   const inputField = document.getElementById('inputText');
   const suggestionsDiv = document.getElementById('suggestions');
-  const form = document.getElementById('form');
   const selectedItemInput = document.getElementById('selectedItem');
 
   // ボタンが押されたとき
@@ -91,10 +87,7 @@
     }
   }
 
-
-
   function all_nothing(){
   }
-
 
 </script>
