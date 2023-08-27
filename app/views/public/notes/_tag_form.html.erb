@@ -1,6 +1,6 @@
 <div id="output"></div>
 <input type="text" id="inputText" placeholder="タグの入力">
-<button id="addButton">タグの追加</button>
+<button id="addButton" type="button">タグの追加</button>
 <div class="suggestions-container">
   <div id="suggestions"></div>
 </div>
@@ -35,10 +35,12 @@
     suggestionsDiv.innerHTML = '';
 
     // 候補リストを表示
+    // const maxLength = Math.max(...items.map(item => item.name.length));
     filteredTags.forEach(item => {
       const suggestionItem = document.createElement('div');
       suggestionItem.className = 'suggestion-tag';
-      suggestionItem.textContent = "　" + item.name + "　" + item.count + "件" ;
+      const padding = "　".repeat(13 - item.name.length);
+      suggestionItem.textContent = `　${item.name}${padding}${item.count}件`;
       suggestionItem.addEventListener('click', function() {
         const inputText = item.name;
         set_tag_button(inputText, outputDiv, inputField);
@@ -50,15 +52,30 @@
 
   // 選択されたタグを表示・記録する
   function set_tag_button(inputText, outputDiv, inputField){
+    const selectedTags = document.getElementById('selected_tags');
     const newButton = document.createElement('button');
     newButton.className = 'button-note_new-tag';
     newButton.textContent = inputText + " ×";
     newButton.addEventListener('click', () => {
       outputDiv.removeChild(newButton);
+      selectedTags.value = removeItem(selectedTags.value, inputText)
     });
     outputDiv.appendChild(newButton);
     inputField.value = '';
     suggestionsDiv.innerHTML = '';
+    selectedTags.value += inputText + ","
+  }
+
+  // 文字列から特定の文字を削除
+  function removeItem(inputString, itemToRemove) {
+    var items = inputString.split(",");
+    var indexToRemove = items.indexOf(itemToRemove);
+
+    if (indexToRemove !== -1) {
+      items.splice(indexToRemove, 1);
+    }
+
+    return items.join(",");
   }
 
   // Enterキーによるsubmitを無効化
@@ -68,11 +85,13 @@
       e.preventDefault(); // submitを行わない
       const inputText = inputField.value; //代わりにタグを投稿する
       if (inputText.trim() !== '') {
-        // set_tag_button(inputText, outputDiv, inputField);
-        all_nothing()
+        set_tag_button(inputText, outputDiv, inputField);
+        // all_nothing()
       }
     }
   }
+
+
 
   function all_nothing(){
   }

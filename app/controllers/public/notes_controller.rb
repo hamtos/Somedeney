@@ -4,22 +4,44 @@ class Public::NotesController < ApplicationController
     @lat = 35.625166
     @lng = 139.243611
 
-    @tags = Tag.all
+    @tags = Tag.joins(:notes)
+               .select('tags.*, COUNT(notes.id) as note_count')
+               .group('tags.id')
+               .order('note_count DESC')
   end
 
   def create
-    # noteモデル
-    @note = Note.new(note_params)
-    @note.tags = Tag.where(id: params[:note][:tag_id])
-    if @note.save
-      redirect_to root_path
-    else
-      flash[:error] = @note.errors.full_messages.join(', ')
-      @note = Note.new
-      @lat = 35.625166
-      @lng = 139.243611
-      @tag_list = Tag.pluck(:name, :id)
-      render "new"
+    Note.transaction do
+      @note = Note.new(note_params)
+      if @note.save
+        # タグの保存処理
+        tags_string = params[:note]["selected_tags"]
+        tag_names = tags_string.split(",").map(&:strip) # tags_stringは","区切り文字列
+
+        # 既存のタグの中で存在するものと、新たに作成するタグのリストを作成
+        existing_tags = Tag.where(name: tag_names)
+        new_tag_names = tag_names - existing_tags.pluck(:name)
+
+        # 既存のタグをノートに紐付ける
+        existing_tags.each do |tag|
+          @note.tags << tag
+        end
+
+        # 新たにタグを作成してノートに紐付ける
+        new_tag_names.each do |tag_name|
+          tag = Tag.create(name: tag_name)
+          @note.tags << tag
+        end
+
+        redirect_to root_path
+      else
+        flash[:error] = @note.errors.full_messages.join(', ')
+        @note = Note.new
+        @lat = 35.625166
+        @lng = 139.243611
+        @tag_list = Tag.pluck(:name, :id)
+        render "new"
+      end
     end
   end
 

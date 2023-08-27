@@ -100,7 +100,7 @@ Customer.create!(
   [ 11, '県指定文化財' ],
 ].each do |category, name|
   Tag.create(
-    { customer_id: 1, tag_category: category, name: name, is_custom: false}
+    { name: name}
   )
 end
 

@@ -13,7 +13,7 @@
           <div class="col">
             <%= f.label :tag_id, "タグ設定" %>
             <%= render '/public/notes/tag_form', tags: @tags %>
-            <%= f.hidden_field :tags %>
+            <%= f.hidden_field "selected_tags", id: "selected_tags" %>
           </div>
         </div>
 

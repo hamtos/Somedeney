@@ -5,7 +5,6 @@ class Customer < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
    has_many :notes, dependent: :destroy
-   has_many :tags, dependent: :destroy
    has_many :plans, dependent: :destroy
 
   def self.guest
