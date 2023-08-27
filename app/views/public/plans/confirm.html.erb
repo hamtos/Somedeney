@@ -1,10 +1,21 @@
-<h6 class="m-3"><b><%= link_to "スポット選択", new_plan_path %> > <u>日程の入力</u> > 作成完了</b></h6>
+<!--ナビゲーター-->
+<% if @is_edit %> <!--false => newモード, true => editモード-->
+  <h6 class="m-3"><b><%= link_to "スポット選択", edit_new_plan_path(@plan) %> > <u>日程の入力</u> > 編集完了</b></h6>
+<% else %>
+  <h6 class="m-3"><b><%= link_to "スポット選択", new_plan_path %> > <u>日程の入力</u> > 作成完了</b></h6>
+<% end %>
+
+<!--日程入力-->
 <div class="container-fluid mt-3">
   <div class="row mt-4">
     <div class="col-md-8">
       <%= form_with model: @plan, local: true do |f| %>
         <div class="col-md-6">
-          <%= f.text_field :name, placeholder: "計画名を入力", class: "form-control" %>
+          <% if @is_edit %>
+            <%= f.text_field :name, placeholder: "計画名を入力", class: "form-control", value: @plan.name %>
+          <% else %>
+            <%= f.text_field :name, placeholder: "計画名を入力", class: "form-control" %>
+          <% end %>
         </div>
         <div class="mt-3">
           <% @notes.each_with_index do |note, index| %>
@@ -14,10 +25,18 @@
                   <tr style="height: 100px">
                     <td class="">
                       <div class="mb-2 mr-1">
-                        到着：<%= f.datetime_field "note_#{note.id}_arrival", value: (1.day.from_now.beginning_of_day + 5.hours).strftime('%Y-%m-%dT%T'), tabindex: -1 %>
+                        <% if @is_edit %>
+                          到着：<%= f.datetime_field "note_#{index}_arrival", value: NotePlan.find_by(note: note, plan: @plan).arrival&.strftime('%Y-%m-%dT%T'), tabindex: -1 %>
+                        <% else %>
+                          到着：<%= f.datetime_field "note_#{index}_arrival", value: (1.day.from_now.beginning_of_day + 5.hours).strftime('%Y-%m-%dT%T'), tabindex: -1 %>
+                        <% end %>
                       </div>
                       <div class="">
-                        出発：<%= f.datetime_field "note_#{note.id}_departure", value: (1.day.from_now.beginning_of_day + 5.hours).strftime('%Y-%m-%dT%T'), tabindex: -1 %>
+                        <% if @is_edit %>
+                          出発：<%= f.datetime_field "note_#{index}_departure", value: NotePlan.find_by(note: note, plan: @plan).departure&.strftime('%Y-%m-%dT%T'), tabindex: -1 %>
+                        <% else %>
+                          出発：<%= f.datetime_field "note_#{index}_departure", value: (1.day.from_now.beginning_of_day + 5.hours).strftime('%Y-%m-%dT%T'), tabindex: -1 %>
+                        <% end %>
                       </div>
                     </td>
                     <td id="card-ajax-<%= index %>">
@@ -28,7 +47,11 @@
                     </td>
                     <td>
                       <div class="ml-1">
-                        <%= f.text_area "note_#{note.id}_comment", placeholder: "備考", rows: 3, cols: 25, class: "form-control" %>
+                        <% if @is_edit %>
+                          <%= f.text_area "note_#{index}_comment", placeholder: "備考", rows: 3, cols: 25, class: "form-control", value: NotePlan.find_by(note: note, plan: @plan).comment %>
+                        <% else %>
+                          <%= f.text_area "note_#{index}_comment", placeholder: "備考", rows: 3, cols: 25, class: "form-control" %>
+                        <% end %>
                       </div>
                     </td>
                   </tr>
@@ -36,9 +59,15 @@
               </table>
             </div>
           <% end %>
-          <%= f.hidden_field :customer_id, value: current_customer.id %>
+          <% unless @is_edit %>
+            <%= f.hidden_field :customer_id, value: current_customer.id %>
+          <% end %>
           <div class="text-center">
-            <%= f.submit '計画を作成', class: "btn-lg btn-success mt-5" %>
+            <% if @is_edit %>
+              <%= f.submit '変更を確定', class: "btn-lg btn-success mt-5" %>
+            <% else %>
+              <%= f.submit '計画を作成', class: "btn-lg btn-success mt-5" %>
+            <% end %>
           </div>
         </div>
       <% end %>

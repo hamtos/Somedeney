@@ -29,6 +29,8 @@ Rails.application.routes.draw do
     get 'plans/confirm' => 'plans#confirm'
     get 'plans/up_note' => 'plans#up_note'
     get 'plans/down_note' => 'plans#down_note'
+    get 'plans/:id/edit_new' => 'plans#edit_new', as: 'edit_new_plan'
+    get 'plans/:id/edit_confirm' => 'plans#edit_confirm', as: 'edit_confirm_plan'
     resources :plans, only: [:index, :new, :create, :show, :edit, :update, :destroy]
   end
 

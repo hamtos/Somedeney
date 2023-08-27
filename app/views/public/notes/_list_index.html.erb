@@ -1,7 +1,7 @@
 <div class="container-note-index mt-3">
   <div class="row-note-index">
     <% notes.each do |note| %>
-      <div class="border rounded m-1 card-onmouse">
+      <div class="border rounded m-1 card">
         <%= render '/public/notes/card', note: note %>
       </div>
     <% end %>

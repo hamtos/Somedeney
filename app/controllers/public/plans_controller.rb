@@ -83,13 +83,13 @@ class Public::PlansController < ApplicationController
       if plan.save
         note_ids.each_with_index do |note_id, index|
           order = index + 1
-          departure = params[:plan]["note_#{note_id}_departure"]
-          arrival = params[:plan]["note_#{note_id}_arrival"]
-          comment = params[:plan]["note_#{note_id}_comment"]
+          departure = params[:plan]["note_#{index}_departure"]
+          arrival = params[:plan]["note_#{index}_arrival"]
+          comment = params[:plan]["note_#{index}_comment"]
           plan.note_plans.create!(note_id: note_id, order: order, departure: departure, arrival: arrival, comment: comment)
         end
         session[:selected_notes_id] = []
-        flash[:notece] = '新しい計画を作成しました'
+        flash[:notice] = '新しい計画を作成しました'
         redirect_to plan_path(plan)
       else
         flash[:error] = '保存できませんでした'
@@ -117,9 +117,68 @@ class Public::PlansController < ApplicationController
     end
   end
 
+  def edit
+    @plan = Plan.find(params[:id])
+    session[:selected_notes_id] = @plan.notes.pluck(:id)
+    note_ids = session[:selected_notes_id] || []
+    @notes = Note.where(id: note_ids).sort_by { |id| note_ids.index(id[:id]) }
+    @is_edit = true
+    render "confirm"
+  end
+
+  def edit_new
+    @plan = Plan.find(params[:id])
+    note = @plan.notes.first
+    @lat = note.latitude
+    @lng = note.longitude
+
+    @marker_lats = Note.active.where.not(latitude: nil).pluck(:latitude)
+    @marker_lngs = Note.active.where.not(latitude: nil).pluck(:longitude)
+    @marker_titles = Note.active.where.not(latitude: nil).pluck(:title)
+
+    # 全体の投稿（右サイド）
+    @all_notes = Note.active.where(is_origin: true).order(created_at: :desc).limit(100)
+
+    # 全体の投稿（左サイド）
+    note_ids = session[:selected_notes_id] || []
+    @selected_notes = Note.where(id: note_ids).sort_by { |id| -note_ids.index(id[:id]) }
+
+    @is_edit = true
+    render "new"
+  end
+
+  def edit_confirm
+    # 画面遷移時のエラー処理
+    if session[:selected_notes_id] == []
+      flash[:error] = "スポット一つ以上選択してください"
+      redirect_to new_plan_path
+    end
+
+    @plan = Plan.find(params[:id])
+
+    note_ids = session[:selected_notes_id] || []
+    @notes = Note.where(id: note_ids).sort_by { |id| note_ids.index(id[:id]) }
+
+    @is_edit = true
+    render "confirm"
+  end
+
   def update
     plan = Plan.find(params[:id])
     if plan.update(plan_params)
+      # plan_noteを再作成
+      plan.note_plans.destroy_all
+
+      note_ids = session[:selected_notes_id]
+      note_ids.each_with_index do |note_id, index|
+        order = index + 1
+        departure = params[:plan]["note_#{index}_departure"]
+        arrival = params[:plan]["note_#{index}_arrival"]
+        comment = params[:plan]["note_#{index}_comment"]
+        plan.note_plans.create!(note_id: note_id, order: order, departure: departure, arrival: arrival, comment: comment)
+      end
+      session[:selected_notes_id] = []
+      flash[:notice] = '計画を更新しました'
       redirect_to plan_path(plan)
     end
   end

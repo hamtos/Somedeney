@@ -1,11 +1,4 @@
-<!--ページ名-->
-<% if @is_edit %> <!--false => newモード, true => editモード-->
-  <h6 class="m-2"><b>計画編集</b></h6>
-<% else %>
-  <h6 class="m-2"><b>計画作成</b></h6>
-<% end %>
-
-<!--スポット選択-->
+<h6 class="m-2"><b>計画作成</b></h6>
 <div class="container-fluid mt-3">
   <div class="row">
     <!--左サイド-->
@@ -21,14 +14,8 @@
           <%= link_to 'リセット', plans_reset_note_path, class: "btn-sm btn-success ml-2" %>
         </div>
         <div class="mt-2 d-flex align-items-center justify-content-center" style="height: 80px;">
-          <% if @is_edit %>
-            <%= link_to edit_confirm_plan_path(@plan), class: "btn btn-warning btn-lg" do %>
-              <i class="fa-solid fa-arrow-right"></i> 日時の編集へ
-            <% end %>
-          <% else %>
-            <%= link_to plans_confirm_path, class: "btn btn-warning btn-lg" do %>
-              <i class="fa-solid fa-arrow-right"></i> 日時の設定へ
-            <% end %>
+          <%= link_to plans_confirm_path, class: "btn btn-warning btn-lg" do %>
+            <i class="fa-solid fa-arrow-right"></i> 日時の設定へ
           <% end %>
         </div>
       </div>
