@@ -8,6 +8,14 @@
   padding-left: 40px;
 }
 
+.container-note-index_null {
+  justify-content: center;
+  align-items: center;
+  border: 1px solid #000;
+  padding: 1rem;
+  margin-top: 1rem;
+}
+
 // ブロックを縦横に並べる
 .row-note-index {
   display: flex;
@@ -51,9 +59,9 @@
   width: 100%;
   max-height: 600px;
   overflow-y: auto;
-  z-index: 1000; /* 他の要素より手前に表示するための z-index 値 */
-  background-color: white; /* 必要に応じて背景色を設定 */
-  outline: 1px solid #000000; /* 必要に応じてボーダーを設定 */
+  z-index: 1000; /* 他の要素より手前に表示 */
+  background-color: white;
+  outline: 1px solid #000000;
   outline-offset: -1px;
 }
 

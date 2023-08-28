@@ -40,22 +40,67 @@ class Public::NotesController < ApplicationController
       @notes = Note.active.where(is_origin: true).order(created_at: :desc)
     end
 
-    # 検査データがあるときに絞り込み
+    # ワード検索データがあるときに絞り込み
     if params[:search]
       @search_word = params[:search]
-      @notes = @notes.where("title LIKE :search OR prefecture LIKE :search OR city LIKE :search", search: "%#{@search_word}%")
+      @notes = @notes.where("note_tags.id LIKE ?", "#{@search_word}")
     end
+
+    # タグ検索用データがあるときに絞り込み
+    if params[:tag_id]
+      @search_word = "# #{Tag.find(params[:tag_id]).name}"
+      @notes = @notes.joins(:note_tags).where(note_tags: {tag_id: params[:tag_id]})
+    end
+
+    # 都道府県検索用データがあるときに絞り込み
+    if params[:prefecture_name]
+      @search_word = "# #{params[:prefecture_name]}"
+      @notes = @notes.where(prefecture: params[:prefecture_name])
+    end
+
+    # 市町村検索用データがあるときに絞り込み
+    if params[:city_name]
+      @search_word = "# #{params[:city_name]}"
+      @notes = @notes.where(city: params[:city_name])
+    end
+
+    @tags = Tag.joins(:notes)
+               .select('tags.*, COUNT(notes.id) as note_count')
+               .group('tags.id')
+               .order('note_count DESC')
+
+    @is_note_index = true
   end
 
   def my_index
     # 自分の投稿を取得
     @notes = Note.active.where(customer_id: current_customer.id).order(created_at: :desc)
 
-    # 検査データがあるときに絞り込み
+    # 検索データがあるときに絞り込み
     if params[:search]
       @search_word = params[:search]
       @notes = @notes.where("title LIKE :search OR prefecture LIKE :search OR city LIKE :search", search: "%#{@search_word}%")
     end
+
+    # タグ検索用データがあるときに絞り込み
+    if params[:tag_id]
+      @search_word = "# #{Tag.find(params[:tag_id]).name}"
+      @notes = @notes.joins(:note_tags).where(note_tags: {tag_id: params[:tag_id]})
+    end
+
+    # 都道府県検索用データがあるときに絞り込み
+    if params[:prefecture_name]
+      @search_word = "# #{params[:prefecture_name]}"
+      @notes = @notes.where(prefecture: params[:prefecture_name])
+    end
+
+    # 市町村検索用データがあるときに絞り込み
+    if params[:city_name]
+      @search_word = "# #{params[:city_name]}"
+      @notes = @notes.where(city: params[:city_name])
+    end
+
+    @is_note_my_index = true
   end
 
   def edit

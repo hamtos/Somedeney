@@ -1,15 +1,31 @@
+<!--ナビゲーション-->
+<div class="m-1 d-flex">
+  <h6><b>詳細検索</b></h6>
+  <% if @search_word.present? %>
+  <div class="pl-2 ml-2">
+    <%= link_to "すべての投稿", notes_path %> <i class="fas fa-angle-right"></i> "<%= @search_word %>"
+  </div>
+  <% end %>
+</div>
+
 <div class="container">
   <!--検索フォーム-->
-  <div class="mt-2 ml-4 p-2">
-    <%= form_tag(notes_path, method: "get") do %>
-      <%= text_field_tag(:search, params[:search], placeholder: "キーワードを入力", size: 30) %>
-      <%= submit_tag("検索") %>
-    <% end %>
-    <% if @search_word.present? %>
-      <%= link_to "home", notes_path %> <i class="fas fa-angle-right"></i> "<%= @search_word %>"
-    <% end %>
+  <div class="container mt-2">
+  <div class="row">
+    <div class="col-md-3">
+    </div>
+    <div class="col-md-6 py-3">
+      <%= form_tag(notes_path, method: "get") do %>
+        <div class="d-flex justify-content-center">
+          <%= text_field_tag(:search, params[:search], placeholder: "スポット名・都道府県名・市町村名を入力", class: "form-control") %>
+          <%= submit_tag("検索", class: "btn btn-success") %>
+        </div>
+      <% end %>
+    </div>
+    <div class="col-md-3 py-3">
+      <%= render '/public/notes/tag_search', tags: @tags %>
+    </div>
   </div>
-
   <!--投稿一覧表示-->
   <%= render '/public/notes/list_index', notes: @notes %>
 </div>

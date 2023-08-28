@@ -1,9 +1,14 @@
-<div class="container-note-index mt-3">
-  <div class="row-note-index">
-    <% notes.each do |note| %>
-      <div class="border rounded m-1 card">
-        <%= render '/public/notes/card', note: note %>
-      </div>
-    <% end %>
+<% if notes.nil? || notes.empty? %>
+  <div class="container-note-index container-note-index_null">投稿はありません</div>
+<% else %>
+  <div class="container-note-index mt-3">
+    <div class="row-note-index">
+      <% notes.each do |note| %>
+        <div class="border rounded m-1 card">
+          <%= render '/public/notes/card', note: note %>
+        </div>
+      <% end %>
+    </div>
   </div>
-</div>
+<% end %>
+
