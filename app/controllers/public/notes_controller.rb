@@ -14,26 +14,8 @@ class Public::NotesController < ApplicationController
     Note.transaction do
       @note = Note.new(note_params)
       if @note.save
-        # タグの保存処理
-        tags_string = params[:note]["selected_tags"]
-        tag_names = tags_string.split(",").map(&:strip) # tags_stringは","区切り文字列
-
-        # 既存のタグの中で存在するものと、新たに作成するタグのリストを作成
-        existing_tags = Tag.where(name: tag_names)
-        new_tag_names = tag_names - existing_tags.pluck(:name)
-
-        # 既存のタグをノートに紐付ける
-        existing_tags.each do |tag|
-          @note.tags << tag
-        end
-
-        # 新たにタグを作成してノートに紐付ける
-        new_tag_names.each do |tag_name|
-          tag = Tag.create(name: tag_name)
-          @note.tags << tag
-        end
-
-        redirect_to root_path
+        update_tags(@note, params[:note]["selected_tags"])
+        redirect_to note_path(@note)
       else
         flash[:error] = @note.errors.full_messages.join(', ')
         @note = Note.new
@@ -78,17 +60,44 @@ class Public::NotesController < ApplicationController
 
   def edit
     @note = Note.find(params[:id])
+    if @note.latitude.present?
+      @lat = @note.latitude
+      @lng = @note.longitude
+    else
+      @lat = 35.625166
+      @lng = 139.243611
+    end
+
+    @tags = Tag.joins(:notes)
+               .select('tags.*, COUNT(notes.id) as note_count')
+               .group('tags.id')
+               .order('note_count DESC')
+    @my_tags = @note.tags
+    @is_edit = true
+    render "new"
   end
 
   def update
-    @note = Note.find(params[:id])
-    if @note.update(note_params)
-      redirect_to notes_customers_path
-    else
-      redirect_back fallback_location: root_path
+    Note.transaction do
+      @note = Note.find(params[:id])
+      if @note.update(note_params)
+        # タグの保存処理
+        update_tags(@note, params[:note]["selected_tags"])
+
+        # 処理の種類に応じてリダイレクト
+        if params[:note]["delete_mode"]
+          redirect_to notes_customers_path
+        else
+          redirect_to note_path(@note)
+        end
+      else
+        flash[:error] = "更新に失敗しました"
+        redirect_back fallback_location: root_path
+      end
     end
   end
 
+  # noteコピー機能
   def copy_record
     source_record = Note.find(params[:note_id])
     new_record = Note.new
@@ -114,6 +123,28 @@ class Public::NotesController < ApplicationController
   private
 
   def note_params
-    params.require(:note).permit(:customer_id, :title, :body, :prefecture, :address, :city, :latitude, :longitude, :image, :is_deleted)
+    params.require(:note).permit(:customer_id, :title, :body, :prefecture, :address, :city, :latitude, :longitude, :image, :is_deleted, :is_visited)
   end
+
+  # タグの保存処理
+  def update_tags(note, tags_string)
+    note.note_tags.destroy_all
+    tag_names = tags_string.split(",").map(&:strip) # tags_stringは","区切り文字列
+
+      # 既存のタグの中で存在するものと、新たに作成するタグのリストを作成
+    existing_tags = Tag.where(name: tag_names)
+    new_tag_names = tag_names - existing_tags.pluck(:name)
+
+      # 既存のタグをノートに紐付ける
+    existing_tags.each do |tag|
+      note.tags << tag
+    end
+
+      # 新たにタグを作成してノートに紐付ける
+    new_tag_names.each do |tag_name|
+      tag = Tag.create(name: tag_name)
+      note.tags << tag
+    end
+  end
+
 end

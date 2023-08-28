@@ -1,8 +1,21 @@
 <div class="container mt-4">
+  <!--タイトル・リンクエリア-->
   <div class="row">
     <h4><b><%= @note.title %></b></h4>
-    <div class="d-flex align-items-center px-2 border border-secondary rounded-pill ml-5"><%= @note.prefecture %></div>
-    <div class="d-flex align-items-center px-2 border border-secondary rounded-pill ml-3"><%= @note.city %></div>
+    <div class="d-flex align-items-center px-2 border border-secondary rounded-pill ml-5">
+      <% if @note.prefecture.present? %>
+        <%= @note.prefecture %>
+      <% else %>
+        県未指定
+      <% end %>
+    </div>
+    <div class="d-flex align-items-center px-2 border border-secondary rounded-pill ml-3">
+      <% if @note.prefecture.present? %>
+        <%= @note.city %>
+      <% else %>
+        市未指定
+      <% end %>
+    </div>
 
     <div class="d-flex">
       <% if customer_signed_in? %>
@@ -16,6 +29,7 @@
           <!--投稿削除機能-->
           <%= form_with model: @note, method: :patch do |f| %>
             <%= f.hidden_field :is_deleted, :value => true %>
+            <%= f.hidden_field "delete_mode", :value => true %>
             <%= f.button type: :submit, class: "btn btn-outline-transparent",
                           data: { toggle: "tooltip", disable_with: '送信中', confirm: "この投稿を削除しますか？"},
                           title: "投稿の削除" do %>
@@ -24,9 +38,20 @@
           <% end %>
 
           <!--計画作成機能-->
-          <%= link_to new_plan_path(note_id: @note.id), class: "btn btn-outline-transparent",
+          <%= link_to plans_add_note_path(id: @note.id), class: "btn btn-outline-transparent",
                       data: { toggle: "tooltip", disable_with: '送信中'}, title: "この投稿から計画を作成する" do %>
             <i class="fa-solid fa-plane fa-xl"></i>
+          <% end %>
+
+          <!--訪問管理-->
+          <%= form_with model: @note, method: :patch do |f| %>
+            <% if @note.is_visited %>
+                <%= f.hidden_field :is_visited, :value => false %>
+                <%= f.submit "訪問済",class: "btn btn-outline-success", data: { confirm: "訪問前に戻しますか？"} %>
+            <% else %>
+                <%= f.hidden_field :is_visited, :value => true %>
+                <%= f.submit "訪問前",class: "btn btn-outline-danger", data: { confirm: "訪問済にしますか？"} %>
+            <% end %>
           <% end %>
 
         <% else %>
@@ -42,17 +67,27 @@
         <% end %>
       <% end %>
     </div>
-
   </div>
-  <div class="row">
-    <div class="col-md6">
-      <div class="row p-1 mt-3 ml-5 border border-dark" style="min-height: 200px; width: 350px">
-        <%= @note.body %>
+
+  <!--タグエリア-->
+  <div class="row mt-2 ml-4">
+    <% @note.tags.each do |tag| %>
+      <div class="d-flex align-items-center px-2 bg-info text-white rounded mr-2">
+        <%= tag.name %>
       </div>
+    <% end %>
+  </div>
+
+  <!--コンテンツエリア-->
+  <div class="row mt-3">
+    <div class="col-md-1">メモ：</div>
+    <div class="col-md-5 border-right" style="min-height:200px">
+        <%= @note.body&.gsub(/\n/, '<br>').html_safe %>
     </div>
-    <div class="col-md6">
-      <% if @note.image.attached? %>
-        <%= image_tag @note.get_image(200, 200) %>
+    <div class="col-md-6">
+      <% if @note.image.present? %>
+        <%= image_tag @note.get_image(250, 300) %>
+      <% else %>
       <% end %>
     </div>
   </div>

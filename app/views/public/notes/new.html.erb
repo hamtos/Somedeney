@@ -1,4 +1,11 @@
-<h6 class="m-2"><b>新規登録</b></h6>
+<!--new, editアクションで使用。edit固有パラメータ：is_edit, my_tags-->
+
+<!--ナビゲーター-->
+<% if @is_edit %>
+  <h6 class="m-2"><b>投稿編集</b></h6>
+<% else %>
+  <h6 class="m-2"><b>新規登録</b></h6>
+<% end %>
 <div class="container">
   <div class="row">
 
@@ -13,7 +20,7 @@
         <div class="row form-group">
           <div class="col">
             <%= f.label :tag_id, "タグ設定" %>
-            <%= render 'public/notes/tag_form', tags: @tags %>
+            <%= render 'public/notes/tag_form', tags: @tags, my_tags: @my_tags %>
             <%= f.hidden_field "selected_tags", id: "selected_tags" %>
           </div>
         </div>
@@ -21,12 +28,15 @@
         <!--メモ機能-->
         <div class="row form-group mt-2">
           <div class="col">
-            <%= f.text_area :body, placeholder: "メモ（任意）", class: "form-control", size: "100x6" %>
+            <%= f.text_area :body, placeholder: "メモ（任意）", class: "form-control", size: "100x6", value: @note.body %>
           </div>
         </div>
 
+        <!--画像投稿機能-->
         <div class="row form-group">
-          <div class="col"><%= f.file_field :note_image, accept: 'image/*', class: "form-control-file" %></div>
+          <div class="col">
+            <%= f.file_field :image, accept: 'image/*', class: "form-control-file" %>
+          </div>
         </div>
 
         <%= f.hidden_field :prefecture %>
@@ -36,14 +46,12 @@
         <%= f.hidden_field :longitude %>
         <%= f.hidden_field :customer_id, :value => current_customer.id %>
 
-        <div class="row">
-          <div class="col-md-2 offset-md-5">
-            <% if f.object.new_record? %>
-              <%= f.submit "保存", class: "btn btn-success" %>
-            <% else %>
-              <%= f.submit "変更", class: "btn btn-success" %>
-            <% end %>
-          </div>
+        <div class="row d-flex justify-content-center mt-5">
+          <% if f.object.new_record? %>
+            <%= f.submit "保存", class: "btn btn-success" %>
+          <% else %>
+            <%= f.submit "変更を保存", class: "btn btn-success" %>
+          <% end %>
         </div>
       <% end %>
     </div>

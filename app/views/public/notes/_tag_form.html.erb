@@ -82,12 +82,20 @@
       const inputText = inputField.value; //代わりにタグを投稿する
       if (inputText.trim() !== '') {
         set_tag_button(inputText, outputDiv, inputField);
-        // all_nothing()
       }
     }
   }
 
-  function all_nothing(){
-  }
+  // --editモードでの処理--
+  const myTags = <%= raw @my_tags&.map { |tag| { name: tag.name, id: tag.id} }.to_json %>
+
+    // @noteのタグをフォームに登録する
+  document.addEventListener("DOMContentLoaded", function() {
+    myTags.forEach(item => {
+      const inputText = item.name;
+      set_tag_button(inputText, outputDiv, inputField);
+    })
+  });
+  // --editモードでの処理--ここまで
 
 </script>
