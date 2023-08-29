@@ -11,10 +11,20 @@
 
     <!--中央-->
     <div class="col-md-6">
+      <!--マップ表示-->
       <%= render '/public/homes/map' %>
 
+      <!--マップセンター取得機能-->
+      <div class="text-right mt-1">
+        <%= form_with url: root_path , local: true, method: :get do |f| %>
+          <%= f.hidden_field :latitude, value: 35.625166, id: "center-lat" %>
+          <%= f.hidden_field :longitude, value: 139.243611, id: "center-lng" %>
+          <%= f.submit "周辺の情報を取得", class: "btn btn-danger" %>
+        <% end %>
+      </div>
+
       <!--検索欄-->
-      <div class="border border-dark rounded mt-2 p-2">
+      <div class="border border-dark rounded mt-3 p-2">
         <div class="row" id='form'>
           <div class="col-lg-8 col-md-7">
             <input type="text" class="form-control" id="top_seach" required minlength="2" placeholder="スポットを検索" />
