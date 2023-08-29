@@ -173,22 +173,24 @@ class Public::NotesController < ApplicationController
 
   # タグの保存処理
   def update_tags(note, tags_string)
-    note.note_tags.destroy_all
-    tag_names = tags_string.split(",").map(&:strip) # tags_stringは","区切り文字列
+    unless tags_string.nil?
+      note.note_tags.destroy_all
+      tag_names = tags_string.split(",").map(&:strip) # tags_stringは","区切り文字列
 
-      # 既存のタグの中で存在するものと、新たに作成するタグのリストを作成
-    existing_tags = Tag.where(name: tag_names)
-    new_tag_names = tag_names - existing_tags.pluck(:name)
+        # 既存のタグの中で存在するものと、新たに作成するタグのリストを作成
+      existing_tags = Tag.where(name: tag_names)
+      new_tag_names = tag_names - existing_tags.pluck(:name)
 
-      # 既存のタグをノートに紐付ける
-    existing_tags.each do |tag|
-      note.tags << tag
-    end
+        # 既存のタグをノートに紐付ける
+      existing_tags.each do |tag|
+        note.tags << tag
+      end
 
-      # 新たにタグを作成してノートに紐付ける
-    new_tag_names.each do |tag_name|
-      tag = Tag.create(name: tag_name)
-      note.tags << tag
+        # 新たにタグを作成してノートに紐付ける
+      new_tag_names.each do |tag_name|
+        tag = Tag.create(name: tag_name)
+        note.tags << tag
+      end
     end
   end
 
