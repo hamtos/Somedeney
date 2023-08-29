@@ -36,6 +36,8 @@
             <%= link_to "# #{tag.name}", notes_path(tag_id: tag.id), style: "color: black;"%>
           <% elsif @is_note_my_index %>
             <%= link_to "# #{tag.name}", notes_customers_path(tag_id: tag.id), style: "color: black;"%>
+          <% elsif @is_top %>
+            <%= link_to "# #{tag.name}", root_path(tag_id: tag.id), style: "color: black;"%>
           <% else %>
             # <%= tag.name %>
           <% end %>

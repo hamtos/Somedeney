@@ -25,10 +25,24 @@ class Public::HomesController < ApplicationController
 
     # 全体の投稿（右サイド）
     if customer_signed_in?
-      @another_notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).near([@lat, @lng], 100).limit(100)
+      @near_notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).near([@lat, @lng], 100)
+      @all_notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(updated_at: :desc)
     else
-      @another_notes = Note.active.where(is_origin: true).order(created_at: :desc).limit(100).near([@lat, @lng]).near([@lat, @lng], 100).limit(100)
+      @near_notes = Note.active.where(is_origin: true).near([@lat, @lng], 100)
+      @all_notes = Note.active.where(is_origin: true).order(updated_at: :desc)
     end
+
+    # タグ検索用データがあるときに絞り込み
+    if params[:tag_id]
+      @search_word = "# #{Tag.find(params[:tag_id]).name}"
+      @near_notes = @near_notes.joins(:note_tags).where(note_tags: {tag_id: params[:tag_id]})
+      @all_notes = @all_notes.joins(:note_tags).where(note_tags: {tag_id: params[:tag_id]})
+    end
+
+    # 投稿の表示数制限
+    @near_notes = @near_notes.limit(100)
+    @all_notes = @all_notes.limit(100)
+
 
     # 全体の投稿（左サイド）
     if customer_signed_in?
@@ -37,5 +51,8 @@ class Public::HomesController < ApplicationController
 
     # 検索フォーム
     @note = Note.new
+
+    # cardのリンク設定用
+    @is_top = true
   end
 end
