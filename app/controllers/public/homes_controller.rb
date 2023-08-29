@@ -17,20 +17,16 @@ class Public::HomesController < ApplicationController
       @lng = params[:longitude]
     end
 
-    @test_name = Geocoder.search([@lat, @lng]).first.state
-
-    @marker_lats = Note.active.where.not(latitude: nil).pluck(:latitude)
-    @marker_lngs = Note.active.where.not(latitude: nil).pluck(:longitude)
-    @marker_titles = Note.active.where.not(latitude: nil).pluck(:title)
+    origin_notes = Note.active.where(is_origin: true)
 
     # 全体の投稿（右サイド）
     if customer_signed_in?
-      @near_notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).near([@lat, @lng], 100)
-      @all_notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(updated_at: :desc)
+      @near_notes = origin_notes.where.not(customer_id: current_customer.id).near([@lat, @lng], 100)
     else
-      @near_notes = Note.active.where(is_origin: true).near([@lat, @lng], 100)
-      @all_notes = Note.active.where(is_origin: true).order(updated_at: :desc)
+      @near_notes = origin_notes.near([@lat, @lng], 100)
     end
+
+    @all_notes = origin_notes.order(updated_at: :desc)
 
     # タグ検索用データがあるときに絞り込み
     if params[:tag_id]
@@ -39,10 +35,24 @@ class Public::HomesController < ApplicationController
       @all_notes = @all_notes.joins(:note_tags).where(note_tags: {tag_id: params[:tag_id]})
     end
 
+    # 都道府県検索用データがあるときに絞り込み
+    if params[:prefecture_name]
+      @search_word = "# #{params[:prefecture_name]}"
+      @near_notes = @near_notes.where(prefecture: params[:prefecture_name])
+      @all_notes = @all_notes.where(prefecture: params[:prefecture_name])
+    end
+
+    # 市町村検索用データがあるときに絞り込み
+    if params[:city_name]
+      @search_word = "# #{params[:city_name]}"
+      @near_notes = @near_notes.where(city: params[:city_name])
+      @all_notes = @all_notes.where(city: params[:city_name])
+    end
+
     # 投稿の表示数制限
     @near_notes = @near_notes.limit(100)
     @all_notes = @all_notes.limit(100)
-
+    @marker_data = @all_notes.where.not(latitude: nil) # マップに表示するマーカーの一覧
 
     # 全体の投稿（左サイド）
     if customer_signed_in?
