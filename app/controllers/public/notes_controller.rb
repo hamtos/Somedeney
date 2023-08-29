@@ -43,7 +43,7 @@ class Public::NotesController < ApplicationController
     # ワード検索データがあるときに絞り込み
     if params[:search]
       @search_word = params[:search]
-      @notes = @notes.where("note_tags.id LIKE ?", "#{@search_word}")
+      @notes = @notes.where("title LIKE :search OR prefecture LIKE :search OR city LIKE :search", search: "%#{@search_word}%")
     end
 
     # タグ検索用データがあるときに絞り込み

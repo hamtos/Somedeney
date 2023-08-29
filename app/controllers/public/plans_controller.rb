@@ -1,24 +1,36 @@
 class Public::PlansController < ApplicationController
   def new
     # マップ
+    @lat = 35.625166
+    @lng = 139.243611
+
     if customer_signed_in?
-      if test = Note.active.where(customer_id: current_customer.id).order(updated_at: :desc).first
-        @lat = test.latitude
-        @lng = test.longitude
+      if latlng = Note.active.where(customer_id: current_customer.id).order(updated_at: :desc).first
+        @lat = latlng.latitude
+        @lng = latlng.longitude
       end
     end
-    @marker_lats = Note.active.where.not(latitude: nil).pluck(:latitude)
-    @marker_lngs = Note.active.where.not(latitude: nil).pluck(:longitude)
-    @marker_titles = Note.active.where.not(latitude: nil).pluck(:title)
 
     # 全体の投稿（右サイド）
-    @all_notes = Note.active.where(is_origin: true).order(created_at: :desc).limit(100)
+    @my_notes = Note.active.where(is_origin: true).where(customer_id: current_customer.id).order(created_at: :desc)
+    @another_notes = Note.active.where(is_origin: true).where.not(customer_id: current_customer.id).order(created_at: :desc).limit(100)
 
-    # 全体の投稿（左サイド）
+    # 検索ワードがあるとき絞り込み
+    if params[:search]
+      @search_word = params[:search]
+      @my_notes = @my_notes.where("title LIKE :search OR prefecture LIKE :search OR city LIKE :search", search: "%#{@search_word}%")
+      @another_notes = @another_notes.where("title LIKE :search OR prefecture LIKE :search OR city LIKE :search", search: "%#{@search_word}%")
+    end
+
+    # 表示件数を指定
+    @my_notes = @my_notes.limit(100)
+    @another_notes = @another_notes.limit(100)
+
+    # 選択済の投稿（左サイド）
     note_ids = session[:selected_notes_id] || []
     @selected_notes = Note.where(id: note_ids).sort_by { |id| -note_ids.index(id[:id]) }
 
-    # 検索欄はlink_to
+    @marker_data = Note.where(id: note_ids).where.not(latitude: nil) # マップに表示するマーカーの一覧
   end
 
   def add_note

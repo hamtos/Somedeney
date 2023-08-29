@@ -1,2 +1,4 @@
-$('.all_notes_ajax').html('<%= j(render '/public/plans/list_all', notes: @all_notes) %>');
+$('#plans_map_ajax').html('<%= j(render '/public/plans/map') %>');
+$('#plan_new_my_notes_ajax').html('<%= j(render '/public/plans/list_all', notes: @my_notes) %>');
+$('#plan_new_another_notes_ajax').html('<%= j(render '/public/plans/list_all', notes: @another_notes) %>');
 $('.selected_notes_ajax').html('<%= j(render '/public/plans/list_selected', notes: @selected_notes) %>');
