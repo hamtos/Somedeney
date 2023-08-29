@@ -1,23 +1,13 @@
 # 管理者初期データ
-Admin.create!(
-  [
-    {
-      email: 'a@a',
-      password: '999999',
-    }
-  ]
-)
+Admin.find_or_create_by!(email: ENV['ADMIN_EMAIL']) do |admin|
+  admin.password = ENV['ADMIN_PASSWORD']
+end
 
 # 初期タグ管理用ユーザー
-Customer.create!(
-  [
-    {
-      email: 'b@b',
-      password: '999999',
-      name: 'shimada'
-    }
-  ],
-)
+Customer.find_or_create_by!(email: ENV['CUSTOMER_EMAIL']) do |customer|
+  customer.password = ENV['CUSTOMER_PASSWORD']
+  customer.name = 'shimada'
+end
 
 # タグ初期値
 [
@@ -99,9 +89,7 @@ Customer.create!(
   [ 11, '重要文化財' ],
   [ 11, '県指定文化財' ],
 ].each do |category, name|
-  Tag.create(
-    { name: name}
-  )
+  Tag.find_or_create_by!(name: name)
 end
 
 # Noteデータ
@@ -162,8 +150,15 @@ end
   ["チャツボミゴケ公園","説明","群馬県","中之条町","日本、〒377-1701 群馬県吾妻郡中之条町入山１３−３ チャツボミゴケ公園",36.6528362,138.5971234],
   ["白糸の滝","説明","静岡県","富士宮市","日本、〒418-0103 静岡県富士宮市上井出２７３−１",35.3128675,138.587441],
 ].each do |title, body, prefecture, city, address, latitude, longitude|
-  Note.create(
-    { customer_id: 1, title: title, body: body, prefecture: prefecture, city: city, address: address, latitude: latitude, longitude: longitude }
+  Note.find_or_create_by!(
+    customer_id: 1,
+    title: title,
+    body: body,
+    prefecture: prefecture,
+    city: city,
+    address: address,
+    latitude: latitude,
+    longitude: longitude,
   )
 end
 
@@ -468,7 +463,8 @@ end
   [40,53],
   [3,53],
 ].each do |tag_id, note_id|
-  NoteTag.create(
-    { tag_id: tag_id, note_id: note_id }
+  NoteTag.find_or_create_by!(
+    tag_id: tag_id,
+    note_id: note_id,
   )
 end
