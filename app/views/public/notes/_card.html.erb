@@ -2,11 +2,11 @@
   <div class="row">
     <div class="col">
       <font size="2">
-        <div class="float-left">
-          <% if @is_top %>
+        <% if @is_top %>
+          <div class="float-left" id="infowindow_icon" onclick="forcus_infowindow(<%= note.id %>)">
             <i class="fa-regular fa-message"></i>
-          <% end %>
-        </div>
+          </div>
+        <% end %>
         <div class="float-right"><b>
           <% if !note.city.present? %>
             # -市
@@ -71,5 +71,23 @@
 
   if (totalWidth > tagContainer.offsetWidth) {
     tagContainer.classList.add('ellipsis');
+  }
+
+  // 指定した投稿に対応するマーカーをフォーカス
+  function forcus_infowindow(note_id) {
+    const marker_data = <%= raw @marker_data&.map { |note| { id: note.id, title: note.title, lat: note.latitude, lng: note.longitude } }.to_json %>
+    const targetMarker = marker_data.find(marker => marker.id === note_id);
+    // map.setCenter({lat: targetMarker.lat, lng: targetMarker.lng});
+    markerOpen(targetMarker.id);
+  }
+
+  let before_marker_id = -1
+  // マーカーのインフォウィンドウ表示
+  function markerOpen(marker_id) {
+    if(before_marker_id !== -1){
+      infowindow[before_marker_id].close()
+    }
+    infowindow[marker_id].open(map, marker[marker_id]);
+    before_marker_id = marker_id
   }
 </script>
