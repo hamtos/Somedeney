@@ -28,34 +28,40 @@
     // contollerにて既存に登録している緯度と経度を変数に入れて渡す
     uluru = {lat: <%= @lat || 35.625166 %>, lng: <%= @lng || 139.243611 %>};
     map = new google.maps.Map(document.getElementById('map'), {
-      zoom: 10,
+      zoom: 9,
       center: uluru,
       streetViewControl: false, //ストリートビューに切り替えるボタンを非表示
       mapTypeControl: false, //地図と航空写真を切り替えるボタンを非表示
       scrollwheel: true, //マウスホイールによるzoomを許可
     });
 
-    var marker_lats = <%= @marker_lats %>
-    var marker_lngs = <%= @marker_lngs %>
-    var marker_titles = '<%== JSON.dump(@marker_titles) %>'.replace(/\[/g, "").replace(/\]/g, "").split(',');
-    for (var i = 0; i < marker_lats.length; i++) {
-      uluru_marker = {lat: marker_lats[i], lng: marker_lngs[i]}
+    // マップをドラッグした時のイベント
+    google.maps.event.addListener(map, 'dragend', function() {
+      const center = map.getCenter();
+      document.getElementById("center-lat").value = center.lat()
+      document.getElementById("center-lng").value = center.lng()
+    });
+
+    // マーカーイベント
+    const marker_data = <%= raw @marker_data&.map { |note| { id: note.id, title: note.title, lat: note.latitude, lng: note.longitude } }.to_json %>
+    marker_data.forEach(item => {
+      uluru_marker = {lat: item.lat, lng: item.lng}
 
       // マーカー設置
-      marker[i] = new google.maps.Marker({
+      marker[item.id] = new google.maps.Marker({
         position: uluru_marker,
         map: map,
         draggable: false   // ドラッグ可否
       });
 
       // マーカーにウィンドウ情報付与
-      infowindow[i] = new google.maps.InfoWindow({ // 吹き出しの追加
-        content: marker_titles[i] // 吹き出しに表示する内容
+      infowindow[item.id] = new google.maps.InfoWindow({ // 吹き出しの追加
+        content: item.title // 吹き出しに表示する内容
       });
 
       // マーカーにクリックイベントを追加
-      markerEvent(i);
-    }
+      markerEvent(item.id);
+    });
   }
   // マーカーにクリックイベントを追加
   function markerEvent(i) {

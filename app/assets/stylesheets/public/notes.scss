@@ -1,4 +1,10 @@
 // ----topページ、note_new----
+  // card
+#infowindow_icon {
+  cursor: pointer;
+}
+
+  // top
 .container-note-index {
   display: flex;
   flex-direction: column;

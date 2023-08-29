@@ -1,9 +1,16 @@
-<!--ページ名-->
-<% if @is_edit %> <!--false => newモード, true => editモード-->
-  <h6 class="m-2"><b>計画編集</b></h6>
-<% else %>
-  <h6 class="m-2"><b>計画作成</b></h6>
-<% end %>
+<!--ナビゲーション-->
+<div class="m-1 d-flex">
+  <% if @is_edit %> <!--false => newモード, true => editモード-->
+    <h6 class="m-2"><b>計画編集</b></h6>
+  <% else %>
+    <h6 class="m-2"><b>計画作成</b></h6>
+  <% end %>
+  <% if @search_word.present? %>
+  <div class="pl-2 ml-2">
+    <%= link_to "すべての投稿", new_plan_path %> <i class="fas fa-angle-right"></i> "<%= @search_word %>"
+  </div>
+  <% end %>
+</div>
 
 <!--スポット選択-->
 <div class="container-fluid mt-3">
@@ -36,47 +43,39 @@
 
     <!--中央-->
     <div class="col-md-6">
-      <%= render '/public/plans/map' %>
+      <div id="plans_map_ajax">
+        <%= render '/public/plans/map' %>
+      </div>
 
       <!--検索欄-->
-      <div class="border border-dark rounded mt-2 p-2">
-        <div class="row" id='form'>
-          <div class="col-lg-8 col-md-7">
-            <input type="text" class="form-control" id="top_seach" required minlength="2" placeholder="スポットを検索" />
-          </div>
-          <div class="col-lg-4 col-md-5">
-            <input type='button' class='btn btn-success' value="スポット検索" onclick="geocode()">
-          </div>
-        </div>
-        <div class="mt-2">
-          <b>見つかった場所：</b><br>　<b id="seach_address"></b>
-        </div>
-        <% if customer_signed_in? %>
-          <div class="mt-2 ml-3">
-            <!--<button id="note_button" style="display: none;">クイック保存</button>-->
-            <%= form_with model: @note, local: true do |f| %>
-              <%= f.hidden_field :customer_id, :value => current_customer.id  %>
-              <%= f.hidden_field :is_origin, :value => false %>
-              <!--hidden_field_changeによって書き換え-->
-              <%= f.hidden_field :title %>
-              <%= f.hidden_field :prefecture %>
-              <%= f.hidden_field :city %>
-              <%= f.hidden_field :address %>
-              <%= f.hidden_field :latitude %>
-              <%= f.hidden_field :longitude %>
-              <!--ここまで-->
-              <%= f.submit "クイック保存", class: "btn btn-info", id: "note_button", style: "display: none;" %>
-            <% end %>
+      <div class="border border-dark rounded mt-2 px-2 py-4">
+        <%= form_tag(new_plan_path, method: "get") do %>
+          <div class="d-flex justify-content-center">
+            <%= text_field_tag(:search, params[:search], placeholder: "スポット名・都道府県名・市町村名を入力", class: "form-control") %>
+            <%= submit_tag("検索", class: "btn btn-success") %>
           </div>
         <% end %>
       </div>
-
     </div>
+
     <!--右サイド-->
     <div class="col-md-3">
       <h6 class="text-center border py-1" style="width: 210px;"><b>投稿一覧</b></h6>
-      <div class="all_notes_ajax">
-        <%= render "/public/plans/list_all", notes: @all_notes %>
+      <ul class="nav nav-tabs" id="myTab" role="tablist" style="width: 210px;">
+        <li class="nav-item">
+          <a class="nav-link active" id="plan_new_my_notes_ajax-tab" data-toggle="tab" href="#plan_new_my_notes_ajax" role="tab" aria-controls="plan_new_my_notes_ajax" aria-selected="true">自身</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="plan_new_another_notes_ajax-tab" data-toggle="tab" href="#plan_new_another_notes_ajax" role="tab" aria-controls="plan_new_another_notes_ajax" aria-selected="false">他者</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="plan_new_my_notes_ajax" role="tabpanel" aria-labelledby="plan_new_my_notes_ajax-tab">
+          <%= render "/public/plans/list_all", notes: @my_notes %>
+        </div>
+        <div class="tab-pane fade" id="plan_new_another_notes_ajax" role="tabpanel" aria-labelledby="plan_new_another_notes_ajax-tab">
+          <%= render "/public/plans/list_all", notes: @another_notes %>
+        </div>
       </div>
     </div>
   </div>

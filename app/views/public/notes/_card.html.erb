@@ -1,29 +1,40 @@
 <div class="px-1" style="width: 190px; height: 80px">
-  <div class="text-right">
-    <font size="2">
-      <div class="d-inline-block px-1"><b>
-        <% if !note.prefecture.present? %>
-          # -県
-        <% elsif @is_note_index %>
-          <%= link_to "# #{note.prefecture}", notes_path(prefecture_name: note.prefecture), style: "color: black;"%>
-        <% elsif @is_note_my_index %>
-          <%= link_to "# #{note.prefecture}", notes_customers_path(prefecture_name: note.prefecture), style: "color: black;"%>
-        <% else %>
-          # <%= note.prefecture %>
+  <div class="row">
+    <div class="col">
+      <font size="2">
+        <% if @is_top %>
+          <div class="float-left" id="infowindow_icon" onclick="forcus_infowindow(<%= note.id %>)">
+            <i class="fa-regular fa-message"></i>
+          </div>
         <% end %>
-      </b></div>
-      <div class="d-inline-block px-1"><b>
-        <% if !note.city.present? %>
-          # -市
-        <% elsif @is_note_index %>
-          <%= link_to "# #{note.city}", notes_path(city_name: note.city), style: "color: black;"%>
-        <% elsif @is_note_my_index %>
-          <%= link_to "# #{note.city}", notes_customers_path(city_name: note.city), style: "color: black;"%>
-        <% else %>
-          # <%= note.city %>
-        <% end %>
-      </b></div>
-    </font><br>
+        <div class="float-right"><b>
+          <% if !note.city.present? %>
+            # -市
+          <% elsif @is_note_index %>
+            <%= link_to "# #{note.city}", notes_path(city_name: note.city), style: "color: black;"%>
+          <% elsif @is_note_my_index %>
+            <%= link_to "# #{note.city}", notes_customers_path(city_name: note.city), style: "color: black;"%>
+          <% elsif @is_top %>
+            <%= link_to "# #{note.city}", root_path(city_name: note.city), style: "color: black;"%>
+          <% else %>
+            # <%= note.city %>
+          <% end %>
+        </b></div>
+        <div class="float-right mr-2"><b>
+          <% if !note.prefecture.present? %>
+            # -県
+          <% elsif @is_note_index %>
+            <%= link_to "# #{note.prefecture}", notes_path(prefecture_name: note.prefecture), style: "color: black;"%>
+          <% elsif @is_note_my_index %>
+            <%= link_to "# #{note.prefecture}", notes_customers_path(prefecture_name: note.prefecture), style: "color: black;"%>
+          <% elsif @is_top %>
+            <%= link_to "# #{note.prefecture}", root_path(prefecture_name: note.prefecture), style: "color: black;"%>
+          <% else %>
+            # <%= note.prefecture %>
+          <% end %>
+        </b></div>
+      </font><br>
+    </div>
   </div>
   <b class="ml-1">
     <%= link_to "#{note.title}",note_path(note), style: "color: black;" %>
@@ -36,6 +47,8 @@
             <%= link_to "# #{tag.name}", notes_path(tag_id: tag.id), style: "color: black;"%>
           <% elsif @is_note_my_index %>
             <%= link_to "# #{tag.name}", notes_customers_path(tag_id: tag.id), style: "color: black;"%>
+          <% elsif @is_top %>
+            <%= link_to "# #{tag.name}", root_path(tag_id: tag.id), style: "color: black;"%>
           <% else %>
             # <%= tag.name %>
           <% end %>
@@ -43,7 +56,6 @@
       <% end %>
     </font>
   </div>
-  <!--<i class="fa-regular fa-message"></i> クリックすると、マップのマーカーウィンドウがポップする-->
 </div>
 
 <script>
@@ -59,5 +71,23 @@
 
   if (totalWidth > tagContainer.offsetWidth) {
     tagContainer.classList.add('ellipsis');
+  }
+
+  // 指定した投稿に対応するマーカーをフォーカス
+  function forcus_infowindow(note_id) {
+    const marker_data = <%= raw @marker_data&.map { |note| { id: note.id, title: note.title, lat: note.latitude, lng: note.longitude } }.to_json %>
+    const targetMarker = marker_data.find(marker => marker.id === note_id);
+    // map.setCenter({lat: targetMarker.lat, lng: targetMarker.lng});
+    markerOpen(targetMarker.id);
+  }
+
+  let before_marker_id = -1
+  // マーカーのインフォウィンドウ表示
+  function markerOpen(marker_id) {
+    if(before_marker_id !== -1){
+      infowindow[before_marker_id].close()
+    }
+    infowindow[marker_id].open(map, marker[marker_id]);
+    before_marker_id = marker_id
   }
 </script>
