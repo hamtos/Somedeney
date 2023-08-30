@@ -17,6 +17,9 @@
     <%= render '/layouts/header' %>
     <%= flash[:error] %>
     <%= flash[:notice] %>
-    <%= yield %>
+    <div class="mb-3" style="min-height: 600px;">
+      <%= yield %>
+    </div>
+    <%= render '/layouts/footer' %>
   </body>
 </html>

@@ -25,7 +25,7 @@ class Public::CustomersController < ApplicationController
 
   private
   def customer_params
-    params.require(:customer).permit(:email, :name, :isdeleted)
+    params.require(:customer).permit(:email, :name, :is_deleted)
   end
 
   def check_guest_account

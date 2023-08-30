@@ -37,6 +37,7 @@
         <ul class="navbar-nav">
           <% if admin_signed_in? %>
             <li><%= link_to 'ユーザー一覧', admin_customers_path, class: "btn btn-outline-dark m-3" %></li>
+            <li><%= link_to '投稿一覧', admin_notes_path, class: "btn btn-outline-dark m-3" %></li>
             <li><%= link_to 'ログアウト', destroy_admin_session_path, method: :delete, class: "btn btn-outline-dark m-3" %></li>
           <% else %>
             <% if customer_signed_in? %>
