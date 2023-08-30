@@ -16,7 +16,7 @@ class Note < ApplicationRecord
   after_validation :reverse_geocode
 
   # 削除されていないデータ
-  scope :active, -> { where(is_deleted: false) }
+  scope :active, -> { joins(:customer).where(is_deleted: false, customers: { is_deleted: false }) }
 
   # 画像表示メソッド
   def get_image(width, height)
