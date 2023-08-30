@@ -26,7 +26,7 @@
 
       <!--マップセンター取得機能-->
       <div class="text-right mt-1">
-        <%= form_with url: root_path , local: false, method: :get do |f| %>
+        <%= form_with url: root_path , remote: true, method: :get do |f| %>
           <%= f.hidden_field :latitude, value: 35.625166, id: "center-lat" %>
           <%= f.hidden_field :longitude, value: 139.243611, id: "center-lng" %>
           <%= f.submit "画面周辺の投稿を取得", class: "btn btn-danger" %>
@@ -70,23 +70,21 @@
     <!--右サイド-->
     <div class="col-md-3">
       <h6 class="text-center border py-1" style="width: 210px;"><b>全体の投稿</b></h6>
-      <div id="top-left-ajax" style="width: 210px;">
-        <!--タブ-->
-        <ul class="nav nav-tabs" id="myTab" role="tablist">
-          <li class="nav-item">
-            <a class="nav-link active" id="top_right_near_ajax-tab" data-toggle="tab" href="#top_right_near_ajax" role="tab" aria-controls="top_right_near_ajax" aria-selected="true">周辺</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" id="top_right_all_ajax-tab" data-toggle="tab" href="#top_right_all_ajax" role="tab" aria-controls="top_right_all_ajax" aria-selected="false">すべて</a>
-          </li>
-        </ul>
-        <div class="tab-content" id="myTabContent">
-          <div class="tab-pane fade show active" id="top_right_near_ajax" role="tabpanel" aria-labelledby="top_right_near_ajax-tab">
-            <%= render "/public/homes/list", notes: @near_notes %>
-          </div>
-          <div class="tab-pane fade" id="top_right_all_ajax" role="tabpanel" aria-labelledby="top_right_all_ajax-tab">
-            <%= render "/public/homes/list", notes: @all_notes %>
-          </div>
+      <!--タブ-->
+      <ul class="nav nav-tabs" id="myTab" role="tablist" style="width: 210px;">
+        <li class="nav-item">
+          <a class="nav-link active" id="top_right_near_ajax-tab" data-toggle="tab" href="#top_right_near_ajax" role="tab" aria-controls="top_right_near_ajax" aria-selected="true">周辺</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" id="top_right_all_ajax-tab" data-toggle="tab" href="#top_right_all_ajax" role="tab" aria-controls="top_right_all_ajax" aria-selected="false">すべて</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent">
+        <div class="tab-pane fade show active" id="top_right_near_ajax" role="tabpanel" aria-labelledby="top_right_near_ajax-tab">
+          <%= render "/public/homes/list", notes: @near_notes %>
+        </div>
+        <div class="tab-pane fade" id="top_right_all_ajax" role="tabpanel" aria-labelledby="top_right_all_ajax-tab">
+          <%= render "/public/homes/list", notes: @all_notes %>
         </div>
       </div>
     </div>
