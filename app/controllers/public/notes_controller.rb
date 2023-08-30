@@ -131,9 +131,9 @@ class Public::NotesController < ApplicationController
 
         # 処理の種類に応じてリダイレクト
         if params[:note]["delete_mode"]
-          redirect_to notes_customers_path
+          redirect_to notes_customers_path, notice: '投稿を削除しました'
         else
-          redirect_to note_path(@note)
+          redirect_to note_path(@note), notice: '投稿を更新しました'
         end
       else
         flash[:error] = "更新に失敗しました"
