@@ -80,11 +80,11 @@
 }
 
 // ----index----
-.card {
+.card_notes {
   background-color: #D0F5BE;
 }
 
-.card:hover {
+.card_notes:hover {
   background-color: #afeeee;
   transition: background-color 0.5s; /* 背景色の変化を～秒かけてアニメーションする */
 }
