@@ -1,0 +1,46 @@
+<!--ナビゲーション-->
+<div class="m-1 d-flex">
+  <h6><b>投稿一覧</b></h6>
+</div>
+
+<!--ユーザー一覧-->
+<div class="container">
+  <div  class="scroll-container_admin-note_index">
+  <table>
+    <thead>
+      <tr class="text-center">
+        <th style="width: 30px">ID</th>
+        <th style="width: 100px">ユーザー名</th>
+        <th style="width: 150px">タイトル</th>
+        <th style="width: 100px">ステータス</th>
+        <th style="width: 80px">県名</th>
+        <th style="width: 200px">説明</th>
+        <th style="width: 50px">is_origin</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @notes.each do |note| %>
+        <tr>
+          <td><%= note.customer.id %></td>
+          <td><%= note.customer.name %></td>
+          <td><%= note.title %></td>
+          <td>
+            <%= form_with model: [:admin, note], method: :patch do |f| %>
+              <% if note.is_deleted %>
+                <%= f.hidden_field :is_deleted, :value => false %>
+                <%= f.submit "削除済",class: "btn btn-outline-danger btn-sm", data: { confirm: "有効に戻しますか？"} %>
+              <% else %>
+                <%= f.hidden_field :is_deleted, :value => true %>
+                <%= f.submit "有効",class: "btn btn-outline-success btn-sm", data: { confirm: "削除済にしますか？"} %>
+              <% end %>
+            <% end %>
+          </td>
+          <td><%= note.prefecture %></td>
+          <td><%= note.body %></td>
+          <td><%= note.is_origin %></td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  </div>
+</div>

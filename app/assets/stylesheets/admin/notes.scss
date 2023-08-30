@@ -1,0 +1,26 @@
+// block要素のスクロール
+.scroll-container_admin-note_index {
+  max-height: 600px;
+  width: 800px;
+  overflow-y: auto;
+}
+/* スクロールバー全体のスタイル */
+.scroll-container_admin-note_index::-webkit-scrollbar {
+  width: 7px; /* スクロールバーの幅 */
+}
+
+/* スクロールバーのトラック部分のスタイル */
+.scroll-container_admin-note_index::-webkit-scrollbar-track {
+  background-color: #f1f1f1; /* トラック部分の背景色 */
+}
+
+/* スクロールバーのハンドル部分（つまみ）のスタイル */
+.scroll-container_admin-note_index::-webkit-scrollbar-thumb {
+  background-color: #888; /* ハンドル部分の背景色 */
+  border-radius: 5px; /* ハンドル部分の角丸 */
+}
+
+/* スクロールバーのハンドル部分がホバーしたときのスタイル */
+.scroll-container_admin-note_index::-webkit-scrollbar-thumb:hover {
+  background-color: #555;
+}
