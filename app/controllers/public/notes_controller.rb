@@ -158,6 +158,12 @@ class Public::NotesController < ApplicationController
       new_record.image = source_record.image
     end
     if new_record.save
+      # タグの複製
+      tags_string = ""
+      source_record.tags.each do |tag|
+        tags_string += "#{tag.name},"
+      end
+      update_tags(new_record, tags_string)
       redirect_to note_path(new_record), notice: '投稿を複製しました'
     else
       flash[:alert] = '複製に失敗しました'
