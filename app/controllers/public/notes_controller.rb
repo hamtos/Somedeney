@@ -10,6 +10,18 @@ class Public::NotesController < ApplicationController
                .order('note_count DESC')
   end
 
+  def detect_landmark
+    @note = Note.new
+    land_mark = Vision.get_image_data(note_params[:image])
+    if land_mark
+      @lat = 35.625166
+      @lng = 139.243611
+    else
+      flash[:error] = "えっちなのはだめです"
+    end
+    render 'new'
+  end
+
   def create
     Note.transaction do
       @note = Note.new(note_params)

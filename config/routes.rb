@@ -21,6 +21,7 @@ Rails.application.routes.draw do
     patch 'customers/leave' => 'customers#leave'
     get 'notes/customers' => 'notes#my_index'
     post 'notes/copy' => 'notes#copy_record'
+    post 'notes/detect_landmark' => 'notes#detect_landmark'
     resources :notes, only: [:index, :new, :create, :show, :edit, :update]
     resources :tags, only: [:index, :new, :create]
     get 'plans/add_note' =>'plans#add_note'

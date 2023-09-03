@@ -48,9 +48,9 @@
 
         <div class="row d-flex justify-content-center mt-5">
           <% if f.object.new_record? %>
-            <%= f.submit "保存", class: "btn btn-success" %>
+            <%= f.submit "保存", class: "btn btn-success btn-lg" %>
           <% else %>
-            <%= f.submit "変更を保存", class: "btn btn-success" %>
+            <%= f.submit "変更を保存", class: "btn btn-success btn-lg" %>
           <% end %>
         </div>
       <% end %>
@@ -64,6 +64,10 @@
         <input type="text" id="note_seach" required minlength="2" size="35" placeholder="スポット名を検索" />
         <input type='button' value="スポット検索" onclick="geocode()">
       </form>
+      <%= form_with model:@note, url: notes_detect_landmark_path, local: true do |f| %>
+        <%= f.file_field :image, accept: 'image/*' %>
+        <%= f.submit 'スポットを検索' %>
+      <% end %>
       <br>
       見つかった場所：<br>　<b id="seach_address"></b>
 
@@ -126,7 +130,7 @@
 <style>
 #map{
   height: 400px;
-  width: 400px;
+  width: 100%;
 }
 </style>
 
@@ -141,7 +145,7 @@
     geocoder = new google.maps.Geocoder()
     // 数値が入っていないとマップが非表示になってしまうためnilの場合は0を入れる
     // contollerにて既存に登録している緯度と経度を変数に入れて渡す
-    uluru = {lat: <%= @lat || 0 %>, lng: <%= @lng || 0 %>};
+    uluru = {lat: <%= @lat || 35.625166 %>, lng: <%= @lng || 139.243611 %>};
     map = new google.maps.Map(document.getElementById('map'), {
       zoom: 16,
       center: uluru,
