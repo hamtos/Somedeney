@@ -10,14 +10,35 @@ class Public::NotesController < ApplicationController
                .order('note_count DESC')
   end
 
-  def detect_landmark
+  # 画像検索機能
+  def detect_landmark_new
     @note = Note.new
-    land_mark = Vision.get_image_data(note_params[:image])
-    if land_mark
-      @lat = 35.625166
-      @lng = 139.243611
-    else
-      flash[:error] = "えっちなのはだめです"
+    if params[:note].present?
+      land_mark = Vision.get_image_data(note_params[:image])
+      if land_mark
+        @lat = land_mark[0][2][0]["latLng"]["latitude"]
+        @lng = land_mark[0][2][0]["latLng"]["longitude"]
+        @score = land_mark[0][1]
+        @name = land_mark[0][0]
+      else
+        # flash[:error] = "みつかりませんでした"
+      end
+    end
+    render 'new'
+  end
+
+  def detect_landmark_edit
+    @note = Note.new
+    if params[:note].present?
+      land_mark = Vision.get_image_data(note_params[:image])
+      if land_mark
+        @lat = land_mark[0][2][0]["latLng"]["latitude"]
+        @lng = land_mark[0][2][0]["latLng"]["longitude"]
+        @score = land_mark[0][1]
+        @name = land_mark[0][0]
+      else
+        # flash[:error] = "みつかりませんでした"
+      end
     end
     render 'new'
   end
