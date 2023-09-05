@@ -63,21 +63,21 @@
       <!--検索欄-->
       <ul class="nav nav-tabs mt-3" id="myTab" role="tablist" style="width: 80%">
         <li class="nav-item">
-          <a class="nav-link <%= @active_seach_tag.try(:[], :text) || "active" %>" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">文字検索</a>
+          <a class="nav-link <%= @active_seach_tab.try(:[], :text) || "active" %>" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">文字検索</a>
         </li>
         <li class="nav-item">
-          <a class="nav-link <%= @active_seach_tag.try(:[], :image) %>" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">画像検索</a>
+          <a class="nav-link <%= @active_seach_tab.try(:[], :image) %>" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">画像検索</a>
         </li>
       </ul>
       <div class="tab-content" id="myTabContent" style="height: 100px">
-        <div class="tab-pane fade <%= @active_seach_tag.try(:[], :text) || "active show" %> mt-3" id="home" role="tabpanel" aria-labelledby="home-tab">
+        <div class="tab-pane fade <%= @active_seach_tab.try(:[], :text) || "active show" %> mt-3" id="home" role="tabpanel" aria-labelledby="home-tab">
           <!--テキスト検索機能-->
           <form id='form'>
             <input type="text" id="note_seach" required minlength="2" size="35" placeholder="検索したいスポット名" />
             <input type='button' value="スポットを検索" onclick="geocode()">
           </form>
         </div>
-        <div class="tab-pane fade <%= @active_seach_tag.try(:[], :image) %> mt-3" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+        <div class="tab-pane fade <%= @active_seach_tab.try(:[], :image) %> mt-3" id="profile" role="tabpanel" aria-labelledby="profile-tab">
           <!--画像検索機能-->
           <% if @is_edit %>
             <%= form_with model: @note, url: notes_detect_landmark_edit_path(@note), local: true, method: :post do |f| %>
@@ -93,11 +93,16 @@
           <div class="container-note-index container-note-index_image_search mt-1">
             <table  border="1" rules="rows">
               <tbody>
-                <% @land_mark_data&.each do |data| %>
-                  <tr class="image_search">
-                    <td class="image_search_link" style="width: 300px" onclick="geocode_location(<%= data[:lat] %>, <%= data[:lng] %>)"><%= data[:name] %></td>
-                    <td><%= number_to_percentage(data[:score] * 100, precision: 0) %></td>
-                  </tr>
+                <% if @land_mark_data.nil? %>
+                <% elsif @land_mark_data.empty? %>
+                  <tr><td class="text-center" style="height: 80px">スポットは見つかりませんでした</td></tr>
+                <% else %>
+                  <% @land_mark_data&.each do |data| %>
+                    <tr class="image_search">
+                      <td class="image_search_link" style="width: 300px" onclick="geocode_location(<%= data[:lat] %>, <%= data[:lng] %>)"><%= data[:name] %></td>
+                      <td><%= number_to_percentage(data[:score] * 100, precision: 0) %></td>
+                    </tr>
+                  <% end %>
                 <% end %>
               </tbody>
             </table>
