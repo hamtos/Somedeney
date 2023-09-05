@@ -22,7 +22,8 @@ Rails.application.routes.draw do
     get 'notes/customers' => 'notes#my_index'
     post 'notes/copy' => 'notes#copy_record'
     post 'notes/detect_landmark_new' => 'notes#detect_landmark_new'
-    post 'notes/detect_landmark_edit' => 'notes#detect_landmark_edit'
+    get  'notes/detect_landmark_new' => redirect('notes/new')
+    post 'notes/:id/detect_landmark_edit' => 'notes#detect_landmark_edit', as: 'notes_detect_landmark_edit'
     resources :notes, only: [:index, :new, :create, :show, :edit, :update]
     resources :tags, only: [:index, :new, :create]
     get 'plans/add_note' =>'plans#add_note'

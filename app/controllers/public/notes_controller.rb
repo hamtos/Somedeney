@@ -1,13 +1,7 @@
 class Public::NotesController < ApplicationController
   def new
     @note = Note.new
-    @lat = 35.625166
-    @lng = 139.243611
-
-    @tags = Tag.joins(:notes)
-               .select('tags.*, COUNT(notes.id) as note_count')
-               .group('tags.id')
-               .order('note_count DESC')
+    @tags = Tag.with_notes_count
   end
 
   # 画像検索機能
@@ -24,11 +18,12 @@ class Public::NotesController < ApplicationController
         # flash[:error] = "みつかりませんでした"
       end
     end
+    @tags = Tag.with_notes_count
     render 'new'
   end
 
   def detect_landmark_edit
-    @note = Note.new
+    @note = Note.find(params[:id])
     if params[:note].present?
       land_mark = Vision.get_image_data(note_params[:image])
       if land_mark
@@ -40,7 +35,10 @@ class Public::NotesController < ApplicationController
         # flash[:error] = "みつかりませんでした"
       end
     end
-    render 'new'
+    @tags = Tag.with_notes_count
+    @my_tags = @note.tags
+    @is_edit = true
+    render "new"
   end
 
   def create
@@ -97,10 +95,7 @@ class Public::NotesController < ApplicationController
       @notes = @notes.where(city: params[:city_name])
     end
 
-    @tags = Tag.joins(:notes)
-               .select('tags.*, COUNT(notes.id) as note_count')
-               .group('tags.id')
-               .order('note_count DESC')
+    @tags = Tag.with_notes_count
 
     @is_note_index = true
   end
@@ -146,10 +141,7 @@ class Public::NotesController < ApplicationController
       @lng = 139.243611
     end
 
-    @tags = Tag.joins(:notes)
-               .select('tags.*, COUNT(notes.id) as note_count')
-               .group('tags.id')
-               .order('note_count DESC')
+    @tags = Tag.with_notes_count
     @my_tags = @note.tags
     @is_edit = true
     render "new"
@@ -233,4 +225,6 @@ class Public::NotesController < ApplicationController
     end
   end
 
+  def test
+  end
 end

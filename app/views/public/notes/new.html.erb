@@ -64,12 +64,15 @@
         <input type="text" id="note_seach" required minlength="2" size="35" placeholder="スポット名を検索" />
         <input type='button' value="スポット検索" onclick="geocode()">
       </form>
-      <%= form_with model: @note, local: true do |f| %>
-        <%= f.file_field :image, accept: 'image/*' %>
-        <% if is_edit %>
-          <%= f.submit 'スポットを検索', url: notes_detect_landmark_edit_path(@note)  %>
-        <% else %>
-          <%= f.submit 'スポットを検索', url: notes_detect_landmark_new_path %>
+      <% if @is_edit %>
+        <%= form_with model: @note, url: notes_detect_landmark_edit_path(@note), local: true, method: :post do |f| %>
+          <%= f.file_field :image, accept: 'image/*' %>
+          <%= f.submit 'スポットを検索' %>
+        <% end %>
+      <% else %>
+        <%= form_with model: @note, url: notes_detect_landmark_new_path(@note), local: true do |f| %>
+          <%= f.file_field :image, accept: 'image/*' %>
+          <%= f.submit 'スポットを検索' %>
         <% end %>
       <% end %>
       <br>
@@ -197,8 +200,8 @@
         document.getElementById('seach_address').innerHTML = results[0].formatted_address
         document.getElementById('prefecture').innerHTML = "都道府県：" + getLocalName(results,1); //デバッグ用
       	document.getElementById('city').innerHTML = "市町村：" + getLocalName(results,2); //デバッグ用
-      	var lat = results[0].geometry.location.lat(); //検索緯度
-      	var lng = results[0].geometry.location.lng(); //検索経度
+      	const lat = results[0].geometry.location.lat(); //検索緯度
+      	const lng = results[0].geometry.location.lng(); //検索経度
       	map.setCenter(results[0].geometry.location); //地図を遷移
         move_marker(lat, lng) //マーカーを移動
         hidden_field_change(results) //フォーム変更
@@ -263,11 +266,11 @@
 
   //現在の表示位置にマーカーを設置する
   function set_marker_with_display(){
-    var latlng = map.getCenter();
+    const latlng = map.getCenter();
     geocode_lacation(latlng);
   }
 
-  //ジオコード結果に基づいてhiddenフォーム変更
+  //ジオコード結果に基���いてhiddenフォーム変更
   function hidden_field_change(geoCodeResults){
     document.getElementById("note_prefecture").value = getLocalName(geoCodeResults,1)
     document.getElementById("note_city").value = getLocalName(geoCodeResults,2)
@@ -303,6 +306,8 @@
       geocode()
     }
   }
+
+
 </script>
 
 <script src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['MAP_KEY'] %>&callback=initMap" async defer></script>
