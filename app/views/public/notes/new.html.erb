@@ -48,9 +48,9 @@
 
         <div class="row d-flex justify-content-center mt-5">
           <% if f.object.new_record? %>
-            <%= f.submit "保存", class: "btn btn-success" %>
+            <%= f.submit "保存", class: "btn btn-success btn-lg" %>
           <% else %>
-            <%= f.submit "変更を保存", class: "btn btn-success" %>
+            <%= f.submit "変更を保存", class: "btn btn-success btn-lg" %>
           <% end %>
         </div>
       <% end %>
@@ -58,14 +58,60 @@
 
     <!--右半分-->
     <div class="col-md-7">
+    スポット検索
 
       <!--検索欄-->
-      <form id='form'>
-        <input type="text" id="note_seach" required minlength="2" size="35" placeholder="スポット名を検索" />
-        <input type='button' value="スポット検索" onclick="geocode()">
-      </form>
+      <ul class="nav nav-tabs mt-3" id="myTab" role="tablist" style="width: 80%">
+        <li class="nav-item">
+          <a class="nav-link <%= @active_seach_tab.try(:[], :text) || "active" %>" id="home-tab" data-toggle="tab" href="#home" role="tab" aria-controls="home" aria-selected="true">文字検索</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link <%= @active_seach_tab.try(:[], :image) %>" id="profile-tab" data-toggle="tab" href="#profile" role="tab" aria-controls="profile" aria-selected="false">画像検索</a>
+        </li>
+      </ul>
+      <div class="tab-content" id="myTabContent" style="height: 100px">
+        <div class="tab-pane fade <%= @active_seach_tab.try(:[], :text) || "active show" %> mt-3" id="home" role="tabpanel" aria-labelledby="home-tab">
+          <!--テキスト検索機能-->
+          <form id='form'>
+            <input type="text" id="note_seach" required minlength="2" size="35" placeholder="検索したいスポット名" />
+            <input type='button' value="スポットを検索" onclick="geocode()">
+          </form>
+        </div>
+        <div class="tab-pane fade <%= @active_seach_tab.try(:[], :image) %> mt-3" id="profile" role="tabpanel" aria-labelledby="profile-tab">
+          <!--画像検索機能-->
+          <% if @is_edit %>
+            <%= form_with model: @note, url: notes_detect_landmark_edit_path(@note), local: true, method: :post do |f| %>
+              <%= f.file_field :image, accept: 'image/*' %>
+              <%= f.submit 'スポットを検索' %>
+            <% end %>
+          <% else %>
+            <%= form_with model: @note, url: notes_detect_landmark_new_path(@note), local: true do |f| %>
+              <%= f.file_field :image, accept: 'image/*' %>
+              <%= f.submit 'スポットを検索' %>
+            <% end %>
+          <% end %>
+          <div class="container-note-index container-note-index_image_search mt-1">
+            <table  border="1" rules="rows">
+              <tbody>
+                <% if @land_mark_data.nil? %>
+                <% elsif @land_mark_data.empty? %>
+                  <tr><td class="text-center" style="height: 80px">スポットは見つかりませんでした</td></tr>
+                <% else %>
+                  <% @land_mark_data&.each do |data| %>
+                    <tr class="image_search">
+                      <td class="image_search_link" style="width: 300px" onclick="geocode_location(<%= data[:lat] %>, <%= data[:lng] %>)"><%= data[:name] %></td>
+                      <td><%= number_to_percentage(data[:score] * 100, precision: 0) %></td>
+                    </tr>
+                  <% end %>
+                <% end %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
       <br>
       見つかった場所：<br>　<b id="seach_address"></b>
+      <%= @name %>
 
       <div class="row mt-3">
         <!--マップ表示-->
@@ -126,7 +172,7 @@
 <style>
 #map{
   height: 400px;
-  width: 400px;
+  width: 100%;
 }
 </style>
 
@@ -141,7 +187,7 @@
     geocoder = new google.maps.Geocoder()
     // 数値が入っていないとマップが非表示になってしまうためnilの場合は0を入れる
     // contollerにて既存に登録している緯度と経度を変数に入れて渡す
-    uluru = {lat: <%= @lat || 0 %>, lng: <%= @lng || 0 %>};
+    uluru = {lat: <%= @lat || 35.625166 %>, lng: <%= @lng || 139.243611 %>};
     map = new google.maps.Map(document.getElementById('map'), {
       zoom: 16,
       center: uluru,
@@ -166,7 +212,7 @@
     google.maps.event.addListener( marker, 'dragend', function(ev){
       // イベントの引数evの、プロパティ.latLngが緯度経度。
       marker_latlng = ev.latLng;
-      geocode_lacation(ev.latLng);
+      geocode_location(ev.latLng.lat(), ev.latLng.lng());
     });
   }
 
@@ -188,8 +234,8 @@
         document.getElementById('seach_address').innerHTML = results[0].formatted_address
         document.getElementById('prefecture').innerHTML = "都道府県：" + getLocalName(results,1); //デバッグ用
       	document.getElementById('city').innerHTML = "市町村：" + getLocalName(results,2); //デバッグ用
-      	var lat = results[0].geometry.location.lat(); //検索緯度
-      	var lng = results[0].geometry.location.lng(); //検索経度
+      	const lat = results[0].geometry.location.lat(); //検索緯度
+      	const lng = results[0].geometry.location.lng(); //検索経度
       	map.setCenter(results[0].geometry.location); //地図を遷移
         move_marker(lat, lng) //マーカーを移動
         hidden_field_change(results) //フォーム変更
@@ -200,16 +246,16 @@
   }
 
   //緯度経度から住所検索
-  function geocode_lacation(latlng) {
+  function geocode_location(lat, lng) {
     geocoder.geocode(
     {
-      'location': latlng,
+      'location': {lat: lat, lng: lng},
       'region': 'jp'
     },
     function(results, status){
       if(status==google.maps.GeocoderStatus.OK){
         document.getElementById('seach_address').innerHTML = results[0].formatted_address //viewに住所を表示
-        move_marker(latlng.lat(), latlng.lng()) //マーカーを移動
+        move_marker(lat, lng) //マーカーを移動
         hidden_field_change(results) //フォーム変更
       } else {
         alert('スポットが見つかりませんでした')
@@ -248,17 +294,17 @@
     google.maps.event.addListener( marker, 'dragend', function(ev){
       // イベントの引数evの、プロパティ.latLngが緯度経度。
       marker_latlng = ev.latLng;
-      geocode_lacation(ev.latLng);
+      geocode_location(ev.latLng.lat(), ev.latLng.lng());
     });
   }
 
   //現在の表示位置にマーカーを設置する
   function set_marker_with_display(){
-    var latlng = map.getCenter();
-    geocode_lacation(latlng);
+    const latlng = map.getCenter();
+    geocode_location(latlng.lat(), latlng.lng());
   }
 
-  //ジオコード結果に基づいてhiddenフォーム変更
+  //ジオコード結果に基���いてhiddenフォーム変更
   function hidden_field_change(geoCodeResults){
     document.getElementById("note_prefecture").value = getLocalName(geoCodeResults,1)
     document.getElementById("note_city").value = getLocalName(geoCodeResults,2)

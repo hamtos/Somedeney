@@ -79,12 +79,27 @@
   background-color: #D0F5BE;
 }
 
-// ----index----
-.card_notes {
+// ----new----
+.container-note-index_image_search {
+  max-height: 85px; /* 表示する高さ */
+  padding-left: 10px;
+  width: 350px;
+}
+
+.image_search_link {
+  cursor: pointer;
+}
+
+.image_search:hover {
   background-color: #D0F5BE;
 }
 
+// ----index----
+.card_notes {
+  background-color: #FBFFDC;
+}
+
 .card_notes:hover {
-  background-color: #afeeee;
+  background-color: #D0F5BE;
   transition: background-color 0.5s; /* 背景色の変化を～秒かけてアニメーションする */
 }

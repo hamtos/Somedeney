@@ -6,7 +6,7 @@ class Public::HomesController < ApplicationController
     @lng = 139.243611
 
     if customer_signed_in?
-      if latlng = Note.active.where(customer_id: current_customer.id).order(updated_at: :desc).first
+      if latlng = Note.active.where(customer_id: current_customer.id).where.not(latitude: nil).order(updated_at: :desc).first
         @lat = latlng.latitude
         @lng = latlng.longitude
       end

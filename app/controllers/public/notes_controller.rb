@@ -1,13 +1,34 @@
 class Public::NotesController < ApplicationController
   def new
     @note = Note.new
-    @lat = 35.625166
-    @lng = 139.243611
+    @tags = Tag.with_notes_count
+  end
 
-    @tags = Tag.joins(:notes)
-               .select('tags.*, COUNT(notes.id) as note_count')
-               .group('tags.id')
-               .order('note_count DESC')
+  # 画像検索機能
+  def detect_landmark_new
+    @note = Note.new
+    if params[:note].present?
+      @land_mark_data = generate_land_mark_data(note_params[:image])
+    else
+      @land_mark_data = []
+    end
+    @tags = Tag.with_notes_count
+    @active_seach_tab = {text: "" , image: "active show"}
+    render 'new'
+  end
+
+  def detect_landmark_edit
+    @note = Note.find(params[:id])
+    if params[:note].present?
+      @land_mark_data = generate_land_mark_data(note_params[:image])
+    else
+      @land_mark_data = []
+    end
+    @tags = Tag.with_notes_count
+    @active_seach_tab = {text: "" , image: "active show"}
+    @my_tags = @note.tags
+    @is_edit = true
+    render "new"
   end
 
   def create
@@ -64,10 +85,7 @@ class Public::NotesController < ApplicationController
       @notes = @notes.where(city: params[:city_name])
     end
 
-    @tags = Tag.joins(:notes)
-               .select('tags.*, COUNT(notes.id) as note_count')
-               .group('tags.id')
-               .order('note_count DESC')
+    @tags = Tag.with_notes_count
 
     @is_note_index = true
   end
@@ -113,10 +131,7 @@ class Public::NotesController < ApplicationController
       @lng = 139.243611
     end
 
-    @tags = Tag.joins(:notes)
-               .select('tags.*, COUNT(notes.id) as note_count')
-               .group('tags.id')
-               .order('note_count DESC')
+    @tags = Tag.with_notes_count
     @my_tags = @note.tags
     @is_edit = true
     render "new"
@@ -200,4 +215,19 @@ class Public::NotesController < ApplicationController
     end
   end
 
+  def generate_land_mark_data(params_image)
+    land_mark_data = []
+    land_marks = Vision.get_image_data(params_image)
+    if land_marks
+      land_marks.each do |land_mark|
+        lat = land_mark[2][0]["latLng"]["latitude"]
+        lng = land_mark[2][0]["latLng"]["longitude"]
+        score = land_mark[1]
+        name = land_mark[0]
+        add_data = {lat: lat, lng: lng, score: score, name: name}
+        land_mark_data.push(add_data)
+      end
+    end
+    return land_mark_data
+  end
 end
