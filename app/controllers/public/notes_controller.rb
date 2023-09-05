@@ -8,17 +8,24 @@ class Public::NotesController < ApplicationController
   def detect_landmark_new
     @note = Note.new
     if params[:note].present?
-      land_mark = Vision.get_image_data(note_params[:image])
-      if land_mark
-        @lat = land_mark[0][2][0]["latLng"]["latitude"]
-        @lng = land_mark[0][2][0]["latLng"]["longitude"]
-        @score = land_mark[0][1]
-        @name = land_mark[0][0]
+      land_marks = Vision.get_image_data(note_params[:image])
+      @land_mark_data = []
+      if land_marks
+        land_marks.each do |land_mark|
+          lat = land_mark[2][0]["latLng"]["latitude"]
+          lng = land_mark[2][0]["latLng"]["longitude"]
+          score = land_mark[1]
+          name = land_mark[0]
+          add_data = {lat: lat, lng: lng, score: score, name: name}
+          @land_mark_data.push(add_data)
+        end
       else
         # flash[:error] = "みつかりませんでした"
       end
     end
     @tags = Tag.with_notes_count
+    # @active_seach_tag = []
+    @active_seach_tag = {text: "" , image: "active show"}
     render 'new'
   end
 
